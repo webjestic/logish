@@ -11,3 +11,7 @@ Shamelessly *derived & inspired from* the concepts and code from [debug](https:/
 package.json
 "funding": "https://github.com/chalk/supports-color?sponsor=1",
 ```
+
+## NPM
+
+- [xo](https://www.npmjs.com/package/xo)

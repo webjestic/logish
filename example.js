@@ -4,67 +4,61 @@
 
 const logish_config = {
     log_level : "trace",
-    use_perf_hooks: true,
-    formats : {
-        date : '%Y-%m-%d %H:%M:%S',
-        meta : '[{{date}}] [{{level}}] [{{ip}}] {{host}}',
-        entry : '{{meta}} | {{namespace}} - {{entry}} {{data}}'
+    debugging : {
+        log_perf_hooks: true,
+        log_only_namespace: true
     },
     console : {
+        format : '%namespace [%level] %entry %data | %perf',
         use_colors : true,
         colors : {
-            TRACE   : "\x1b[32m",    DEBUG   : "\x1b[36m",
-            INFO    : "\x1b[37m",    WARN    : "\x1b[33m",
-            ERROR   : "\x1b[35m",    FATAL   : "\x1b[31m"
+            trace   : "\x1b[32m",    debug   : "\x1b[36m",
+            info    : "\x1b[37m",    warn    : "\x1b[33m",
+            error   : "\x1b[35m",    fatal   : "\x1b[31m"
         }
     },
     controllers : [
         {
-            name : "error_control",
-            levels: ["error", "fatal"],
+            name: "combined",
+            tofile: true,
             console : true,
+            levels: ["trace", "debug", "info", "warn", "error", "fatal"],
+            date : '%Y-%m-%d %H:%M:%S',
             file: {
-                use: true,
-                name: "/logs/errors.log"
+                format : '[%date] [%level] %namespace %host %ip - %entry | %perf %data',
+                filename: "logs/app.log",   
+                maxsize_in_mb: 1,
+                backups_kept: 3, // logs/errors_2022-07-14_1.log, logs/errors_2022-07-14_2.log
+                gzip_backups : false
             }
-        },
-        {
-            name : "info_control",
-            levels: ["info", "warn"],
-            console : false,
-            toFile: true,
-            file: {
-                use: true,
-                name: "/logs/app.log"
-            }
-        },
-        {
-            name : "debug_control",
-            levels : ["trace", "debug"],
-            console: true,
-            toFile: true,
-            file: {
-                use: true,
-                name: "/logs/debug.log"
-            }
+
         }
     ]   
 }
 
-const log = require('./index')(logish_config, 'example.js')
+const log = require('./index')(logish_config, 'example')
+//const log = require('./index')(logish_config)
 
 // Register a listener
 log.on('LogEvent', (logEntry) => {
     
+    /*
     if (logEntry.data) 
         console.log (logEntry.console, logEntry.data)
     else
         console.log (logEntry.console)
-    
+    */
+   // if (logEntry.level === 'INFO') console.log(logEntry)
 })
 
+
 var str = "Hello Logish"
-log.fatal(str, logish_config, (farg, fparam) => {
+var data = {name: "Joe", age: "30"}
+var tether = 100.200
+var xp = true
+var arr = ['A', 'B', 'C']
+/*
+log.fatal(str, data, tether, xp, arr, (farg, fparam) => {
     farg = 1
     fparam = 3
     console.log ('callback', (farg + fparam))
@@ -73,17 +67,18 @@ log.fatal(str, logish_config, (farg, fparam) => {
 log.error(str)
 log.warn(str)
 log.info(str)
-log.debug(str)
+*/
+log.debug(str, data)
 log.trace(str)
 log.debug(str)
 log.trace(str)
 setTimeout(() => {
     log.debug(str);
-  }, "12000") // 12 seconds
+  }, "500") // 12000 12 seconds
 setTimeout(() => {
     log.trace(str);
-  }, "62000") // 62 seconds
-
+  }, "350") // 62000 seconds
+log.info('logEntry')
 
 
 /*

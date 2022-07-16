@@ -3,8 +3,13 @@
 */
 
 const EventEmitter = require('events')
-require('util').inspect.defaultOptions.depth = 10
+const os = require('os')
+// const path = require('path')
 const { performance } = require('perf_hooks') // https://nodejs.org/api/perf_hooks.html#performancegetentries
+require('util').inspect.defaultOptions.depth = 10
+
+const FileControl = require('./ControlFile')
+
 const resetColor = "\x1b[0m"
 
 
@@ -12,20 +17,19 @@ const resetColor = "\x1b[0m"
 */
 module.exports = class LogClass extends EventEmitter {
     log_levels = Object.freeze({ "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3, "ERROR": 4, "FATAL": 5 })
-    log_level = -1
+    log_levelid = -1
     config = {}
     env = {}
     namespace = ""
+    hostname = os.hostname()
 
     /*
     */
     constructor(config, namespace) {
         super()
-        /*
-        console.log('LogClass: namespace:', namespace)
-        console.log('LogClass: config:', config)
-        */
-        this.namespace = namespace
+
+        if (namespace) this.namespace = namespace 
+        else this.namespace = ''
         this.config = config
         this.validateConfig()
         this.setupEnv()
@@ -46,11 +50,11 @@ module.exports = class LogClass extends EventEmitter {
             if (key.toUpperCase().includes('LOGISH') || key.toUpperCase().includes('DEBUG'))
                 this.env[key] = process.env[key];
         });
-        /*
-        console.log('namespaces', this.env)
-        console.log('Config Log Level:', this.config.log_level)
-        */
-        this.log_level = this.log_levels[this.config.log_level]
+        
+        this.log_levelid = this.log_levels[this.config.log_level]
+
+        let nodeVersion = process.version  // let process.version.match(/^v(\d+\.\d+)/)[1] 
+        this.config.nodeVersion = nodeVersion
     }
 
     /* BUILD: add alias function names info(), error(), debug(), etc,.
@@ -64,20 +68,16 @@ module.exports = class LogClass extends EventEmitter {
     /* ENTRY POINT: info(), error(), etc
     */
     logMethods(...args) {
-        /*
-        console.log('logMethods', arguments)
-        console.log('logMethods [args]', args)
-        console.log(arguments.length)
-        */
 
-        /*
-        for (let value of arguments) {
-            console.log ((typeof value))
-        }
-        */
         // exit if the log level attempt less than the confugured log level.
         const levelid = this.log_levels[arguments[0].toUpperCase()]
-        if (levelid < this.log_level) return false
+        if (levelid < this.log_levelid) return false
+
+        // if debug() or trace() and log only namespace entries is true
+        // check to see if the namespace matches a defined env namespace
+        // scenario: DEBUG=express and require('logish')(config, 'express')
+        if ((levelid <= 1) && (this.config.debugging.log_only_namespace))
+        if ( (this.env['DEBUG'].split(',')).indexOf(this.namespace) === -1) return false
 
         const dtime = Date.now()
         var callback = undefined
@@ -86,6 +86,7 @@ module.exports = class LogClass extends EventEmitter {
         var logEntry = {}
         logEntry.level = arguments[0].toUpperCase()
         logEntry.levelid = levelid
+        logEntry.hostname = this.hostname
         logEntry.namespace = this.namespace
         logEntry.message = arguments[1]
         logEntry.timestamp = Date.now()
@@ -127,29 +128,28 @@ module.exports = class LogClass extends EventEmitter {
     */
     performanceMark(logEntry) {
         if (logEntry.level === 'DEBUG' || logEntry.level === 'TRACE') {
-            if (this.config.use_perf_hooks) {
-                
+            if (this.config.debugging.log_perf_hooks) {
+
+                // if a performance marker has previously been established, determine
+                // which level is in progress and process the performance marker.
                 let entries = performance.getEntries()
                 if (entries.length > 0) {
                     let traceSet = false 
                     let debugSet = false
                     for (let value of entries) {
-                        if (value.name === 'DEBUG') {
-                            debugSet = true
-                            break
-                        }
-                        if (value.name === 'TRACE') {
-                            traceSet = true
-                            break
-                        }
+                        if (value.name === 'DEBUG') debugSet = true
+                        if (value.name === 'TRACE') traceSet = true
                     }
+
+                    // if a previous marker is found, measure the performance, calculate the time
+                    // and update the logEntry key
                     if ((logEntry.level === 'DEBUG' && debugSet) || (logEntry.level === 'TRACE' && traceSet)) {
-                        let ms = Math.round(performance.measure(logEntry.level, logEntry.level).duration * 10000) / 10000 
+                        let ms = Math.round(performance.measure(logEntry.level, logEntry.level).duration * 100) / 100 
                         let s = 0
                         let m = 0
                         let tmeasure = ''
 
-                        if (ms > 1000) s = Math.round( ((ms/1000) % 60) * 1000) / 1000
+                        if (ms > 1000) s = Math.round( ((ms/1000) % 60) * 100) / 100
                         if (ms > 60000) m = Math.round( ((ms/1000/60) % 60 ) )
 
                         if (m>0) tmeasure = `m:${m}:${s}+` 
@@ -169,7 +169,7 @@ module.exports = class LogClass extends EventEmitter {
     /*
     */
     logToConsole(logEntry) {
-        const levelColor = this.config.console.colors[logEntry.level]
+        const levelColor = this.config.console.colors[logEntry.level.toLowerCase()]
 
         let perf = ''
         if (logEntry.perf_time != undefined) perf = `| ${logEntry.perf_time}`
@@ -187,9 +187,22 @@ module.exports = class LogClass extends EventEmitter {
 
     /*
     */
-   logToFile(logEntry) {
-
-   }
-
+    logToFile(logEntry) {
+        if (!this.config.controllers) return false
+        let fileControl = new FileControl()
+        let entry = undefined
+        for (let controller of this.config.controllers) {
+            if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1))  {
+                //controllers.push(controller)
+                let perf = ''
+                if (logEntry.perf_time != undefined) perf = `| ${logEntry.perf_time}`
+                entry = `${logEntry.timeToString} [${logEntry.level}] ${logEntry.namespace} ${logEntry.hostname} - ${logEntry.message} ${perf}`
+                entry += os.EOL
+    
+                fileControl.appendToFile(controller, entry)
+            }
+        }
+        if (entry !== undefined) logEntry.fileEntry = entry
+    }
 }
 
