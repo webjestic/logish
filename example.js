@@ -15,13 +15,13 @@ const logish_config = {
             trace   : "\x1b[32m",    debug   : "\x1b[36m",
             info    : "\x1b[37m",    warn    : "\x1b[33m",
             error   : "\x1b[35m",    fatal   : "\x1b[31m"
-        }
+        },
+        display_levels : ["trace", "debug", "info", "warn", "error", "fatal"]
     },
-    controllers : [
+    file_controllers : [
         {
             name: "combined",
             tofile: true,
-            console : true,
             levels: ["trace", "debug", "info", "warn", "error", "fatal"],
             date : '%Y-%m-%d %H:%M:%S',
             file: {
@@ -31,7 +31,6 @@ const logish_config = {
                 backups_kept: 3, // logs/errors_2022-07-14_1.log, logs/errors_2022-07-14_2.log
                 gzip_backups : false
             }
-
         }
     ]   
 }
