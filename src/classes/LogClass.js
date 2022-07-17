@@ -20,15 +20,15 @@ module.exports = class LogClass extends EventEmitter {
     */
     constructor(config, namespace) {
         super()
-        let configuration = new LogConfig(config)
 
         if (namespace) this.namespace = namespace 
         else this.namespace = ''
-          
+
         this.log_levels = Object.freeze({ "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3, "ERROR": 4, "FATAL": 5 })
         this.hostname = os.hostname()
         this.log_levelid = -1
 
+        let configuration = new LogConfig(config)
         this.config = configuration.get()
         this.setupEnv()
         this.addLevelMethods()
@@ -149,11 +149,18 @@ module.exports = class LogClass extends EventEmitter {
         entry += os.EOL
 
         // if a file_controller exists, log tofile is true, and the level being logged 
-        // is part of the controller, then attemtp to log to file
+        // is part of the controller, then attemtp to log to file. file_controllers are
+        // not required and therefore, may not exist in the config.
         let fileControl = new FileControl()
-        for (let controller of this.config.file_controllers) {
-            if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1)) 
-                fileControl.appendToFile(controller, entry)
+        if (this.config.file_controllers) {
+            try {
+                for (let controller of this.config.file_controllers) {
+                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1)) 
+                        fileControl.appendToFile(controller, entry)
+                }
+            } catch (e) {
+                console.log(e)
+            }
         }
         if (entry !== undefined) logEntry.fileEntry = entry
     }

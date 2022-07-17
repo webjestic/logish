@@ -11,21 +11,21 @@ const logish_config = {
     console : {
         format : '%namespace [%level] %entry %data | %perf',
         use_colors : true,
+        display_levels : ["trace", "debug", "info", "warn", "error", "fatal"],
         colors : {
             trace   : "\x1b[32m",    debug   : "\x1b[36m",
             info    : "\x1b[37m",    warn    : "\x1b[33m",
             error   : "\x1b[35m",    fatal   : "\x1b[31m"
-        },
-        display_levels : ["trace", "debug", "info", "warn", "error", "fatal"]
+        }
     },
     file_controllers : [
         {
             name: "combined",
             tofile: true,
             levels: ["trace", "debug", "info", "warn", "error", "fatal"],
-            date : '%Y-%m-%d %H:%M:%S',
             file: {
                 format : '[%date] [%level] %namespace %host %ip - %entry | %perf %data',
+                date : '%Y-%m-%d %H:%M:%S',
                 filename: "logs/app.log",   
                 maxsize_in_mb: 1,
                 backups_kept: 3, // logs/errors_2022-07-14_1.log, logs/errors_2022-07-14_2.log
