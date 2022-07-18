@@ -1,15 +1,25 @@
+/**
+ * 
+ */
 'use strict'
 
-/*
-*/
 
 const { performance } = require('perf_hooks') // https://nodejs.org/api/perf_hooks.html#performancegetentries
 
-/*
-*/
+/**
+ * 
+ */
 module.exports = class Performance {
+
+    /**
+     * 
+     */
     constructor() { }
 
+    /**
+     * 
+     * @param {*} logEntry 
+     */
     measure(logEntry) {
         // if a performance marker has previously been established, determine
         // which level is in progress and process the performance marker.

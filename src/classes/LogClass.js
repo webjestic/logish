@@ -1,6 +1,7 @@
+/**
+ * 
+ */
 'use strict'
-/*
-*/
 
 const EventEmitter = require('events')
 const os = require('os')
@@ -12,12 +13,17 @@ const Performance = require('./Performance')
 const LogConfig = require('./LogConfig')
 
 
-/*
-*/
+/**
+ * 
+ * TODO: revist returns
+ */
 module.exports = class LogClass extends EventEmitter {
 
-    /*
-    */
+    /**
+     * 
+     * @param {object} config 
+     * @param {string} namespace 
+     */
     constructor(config, namespace) {
         super()
 
@@ -35,8 +41,9 @@ module.exports = class LogClass extends EventEmitter {
     }
 
 
-    /*
-    */
+    /**
+     * 
+     */
     setupEnv() {
         this.env = {}
         Object.keys(process.env).forEach(key => {
@@ -50,16 +57,23 @@ module.exports = class LogClass extends EventEmitter {
         this.config.nodeVersion = nodeVersion
     }
 
-    /* BUILD: add alias function names info(), error(), debug(), etc,.
-    */
+
+    /**
+     * BUILD: add alias function names info(), error(), debug(), etc,.
+     */
     addLevelMethods() {
         Object.keys(this.log_levels).forEach(method => {
              this[method.toLowerCase()] = this.logMethods.bind(this, method.toLowerCase())
         })
     }
       
-    /* ENTRY POINT: info(), error(), etc
-    */
+
+    /**
+     * ENTRY POINT: info(), error(), etc
+     * 
+     * @param  {...any} args 
+     * @returns 
+     */
     logMethods(...args) {
 
         // exit if the log level attempt less than the confugured log level.
@@ -106,9 +120,11 @@ module.exports = class LogClass extends EventEmitter {
         return true
     }
 
-
-    /* PROCESS POINT
-    */
+    /**
+     * The process point.
+     * 
+     * @param {object} logEntry 
+     */
     log(logEntry) {
         this.performanceMark(logEntry)
         this.logToConsole(logEntry)
@@ -117,8 +133,10 @@ module.exports = class LogClass extends EventEmitter {
         this.emit('LogEvent', logEntry)
     }
 
-    /*
-    */
+    /**
+     * 
+     * @param {object} logEntry 
+     */
     performanceMark(logEntry) {
         if (logEntry.level === 'DEBUG' || logEntry.level === 'TRACE') {
             if (this.config.debugging.log_perf_hooks) {
@@ -128,8 +146,11 @@ module.exports = class LogClass extends EventEmitter {
         }
     }
 
-    /*
-    */
+    /**
+     * 
+     * @param {object} logEntry 
+     * @returns 
+     */
     logToConsole(logEntry) {
         if (this.config.console.display_levels.indexOf(logEntry.level.toLowerCase()) < 0) return false
 
@@ -137,8 +158,11 @@ module.exports = class LogClass extends EventEmitter {
         consoleControl.log(this.config.console, logEntry)
     }
 
-    /*
-    */
+    /**
+     * 
+     * @param {object} logEntry 
+     * @returns 
+     */
     logToFile(logEntry) {
         if (!this.config.file_controllers) return false
 

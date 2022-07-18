@@ -1,15 +1,19 @@
+/**
+ * 
+ */
 'use strict'
-/*
-*/
 
 
-/*
-*/
+/**
+ * 
+ */
 module.exports = class LogConfig {
     config = {}
 
-    /*
-    */
+    /**
+     * 
+     * @param {*} config 
+     */
     constructor(config) {
         this.config = config
 
@@ -20,8 +24,9 @@ module.exports = class LogConfig {
 
     }
 
-    /*
-    */
+    /**
+     * 
+     */
     validateRoot() {
         if (this.config.log_level === undefined) {
             this.config.log_level = 'INFO' // default
@@ -42,8 +47,9 @@ module.exports = class LogConfig {
         }
     }
 
-    /*
-    */
+    /**
+     * 
+     */
     validateDebugging() {
         if (this.config.debugging === undefined) {
             this.config.debugging = { // default
@@ -66,8 +72,9 @@ module.exports = class LogConfig {
         }
     }
 
-    /*
-    */
+    /**
+     * 
+     */
     validateConsole() {
         if (this.config.console === undefined) {
             this.config.console = {     // default
@@ -132,8 +139,9 @@ module.exports = class LogConfig {
     }
 
 
-    /* 
-    */
+    /**
+     * 
+     */
     validateFileCcontrollers() {
         
         //  config.file_controllers is not required and may not exist in the configuration.
@@ -150,8 +158,10 @@ module.exports = class LogConfig {
     }
 
 
-    /*
-    */
+    /**
+     * 
+     * @param {*} controller 
+     */
     validateFileController(controller) {
 
         // even though a controller is not required, if one exits
@@ -189,6 +199,10 @@ module.exports = class LogConfig {
     }
 
 
+    /**
+     * 
+     * @returns 
+     */
     get() {
         return this.config
     }

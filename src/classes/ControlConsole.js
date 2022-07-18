@@ -1,13 +1,25 @@
+/**
+ * 
+ */
 'use strict'
 
-/*
-*/
-
+/**
+ * 
+ */
 module.exports = class ConsoleControl {
+
+    /**
+     * 
+     */
     constructor() {
 
     }
 
+    /**
+     * 
+     * @param {*} consoleOptions 
+     * @param {*} logEntry 
+     */
     log(consoleOptions, logEntry) {
         const resetColor = "\x1b[0m"
         const levelColor = consoleOptions.colors[logEntry.level.toLowerCase()]
