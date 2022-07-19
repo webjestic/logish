@@ -14,7 +14,6 @@ const logish_config = {
         log_only_namespace: false
     },
     console : {
-        format : '%namespace [%level] %entry %data | %perf',
         use_colors : true,
         display_levels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
         colors : {
@@ -29,7 +28,7 @@ const logish_config = {
             tofile: true,
             levels: ['info', 'warn', 'error', 'fatal'],
             file: {
-                format : '[%date] [%level] %namespace %host %protocol %ip - %entry | %perf %data',
+                format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
                 filename: 'logs/app.log',   
                 maxsize_in_mb: 0.5,
                 backups_kept: 1, // logs/app_2022-07-14_1.log, logs/app_2022-07-14_2.log
@@ -41,7 +40,7 @@ const logish_config = {
             tofile: true,
             levels: ['trace', 'debug'],
             file: {
-                format : '[%date] [%level] %namespace %host %protocol %ip - %entry | %perf %data',
+                format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
                 filename: 'logs/dev.log',   
                 maxsize_in_mb: 0.5,
                 backups_kept: 1, // logs/dev_2022-07-14_1.log, logs/dev_2022-07-14_2.log
@@ -98,7 +97,10 @@ log.info('Info log')
 log.debug('Debug log')
 */
 
-log.info(1)
+log.debug('debug test')
+log.debug('message', 1, 'hope', ['item', 'items'], {'obj': 'yes', 'class': false}, (logEntry) => {
+    console.log(logEntry)
+})
 
 
 /*

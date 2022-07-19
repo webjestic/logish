@@ -102,15 +102,28 @@ module.exports = class Logish extends EventEmitter {
         logEntry.console = undefined
         logEntry.fileEntry = undefined
 
-        // if any data has been added to the log event, build 
-        // the data object. if a callback function is discovered assign it.
+        // if any objects has been added to the log event, build the data object.
+        // update the logEntry.message with any non-object items
+        // if a callback function is discovered assign it.
+        let dataIndex = 0
         if (arguments.length > 2) {
-            logEntry.data = {}
             for (let i = 2; i <= arguments.length-1; i++) {
-                if ((typeof arguments[i]) === 'function') {
+
+                switch (typeof arguments[i]) {
+                case 'function' : 
                     callback = arguments[i]
-                } else {
-                    logEntry.data[i-2] = arguments[i]
+                    break
+                case 'object' : 
+                    if (Array.isArray(arguments[i]))
+                        logEntry.message += ' [ ' + arguments[i] + ' ]'
+                    else {
+                        if (logEntry.data === undefined) logEntry.data = {}
+                        logEntry.data[dataIndex] = arguments[i]
+                        dataIndex++
+                    }
+                    break
+                default :
+                    logEntry.message += ' ' + arguments[i]
                 }
             }
         }   

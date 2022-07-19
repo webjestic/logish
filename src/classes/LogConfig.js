@@ -84,7 +84,6 @@ module.exports = class LogConfig {
     validateConsole() {
         if (this.config.console === undefined) {
             this.config.console = {     // default
-                format : '%namespace [%level] %entry %data | %perf',
                 use_colors : true,
                 display_levels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
                 colors : {
@@ -95,8 +94,6 @@ module.exports = class LogConfig {
             }
         } else {
 
-            if (this.config.console.format === undefined)
-                this.config.console.format = '%namespace [%level] %entry %data | %perf' // default
             if (this.config.console.use_colors === undefined) 
                 this.config.console.use_colors = true   // default
             if (this.config.console.display_levels === undefined) 
@@ -121,12 +118,10 @@ module.exports = class LogConfig {
             if (this.config.console.colors.fatal === undefined) 
                 this.config.console.colors.fatal = '\x1b[31m'   // default
 
-            if ( typeof this.config.console.format !== 'string' )
-                throw Error ('config.console.format is not of type "string"')
             if ( typeof this.config.console.use_colors !== 'boolean')
-                throw Error ('config.console.format is not of type "boolean"')
+                throw Error ('config.console.use_colors is not of type "boolean"')
             if ( typeof this.config.console.display_levels !== 'object')
-                throw Error ('config.console.format is not of type "object"')
+                throw Error ('config.console.display_levels is not of type "object"')
             if ( typeof this.config.console !== 'object' )
                 throw Error ('config.console is not of type "object"')
             if ( typeof this.config.console.colors.trace !== 'string' )
