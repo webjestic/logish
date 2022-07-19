@@ -17,7 +17,7 @@ const LogConfig = require('./LogConfig')
  * 
  * TODO: revist returns
  */
-module.exports = class LogClass extends EventEmitter {
+module.exports = class Logish extends EventEmitter {
 
     /**
      * 
@@ -72,7 +72,6 @@ module.exports = class LogClass extends EventEmitter {
      * ENTRY POINT: info(), error(), etc
      * 
      * @param  {...any} args 
-     * @returns 
      */
     logMethods(...args) {
 
@@ -117,7 +116,6 @@ module.exports = class LogClass extends EventEmitter {
 
         this.log(logEntry)
         if (callback) callback(logEntry)
-        return true
     }
 
     /**
@@ -179,8 +177,11 @@ module.exports = class LogClass extends EventEmitter {
         if (this.config.file_controllers) {
             try {
                 for (let controller of this.config.file_controllers) {
-                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1)) 
+                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1)) {
                         fileControl.appendToFile(controller, entry)
+                        if (logEntry.data) 
+                            fileControl.appendToFile(controller, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
+                    }
                 }
             } catch (e) {
                 console.log(e)
@@ -189,4 +190,3 @@ module.exports = class LogClass extends EventEmitter {
         if (entry !== undefined) logEntry.fileEntry = entry
     }
 }
-

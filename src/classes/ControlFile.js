@@ -3,7 +3,6 @@
  */
 'use strict'
 
-
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
@@ -20,39 +19,28 @@ module.exports = class FileControl {
     }
 
     /**
-     * 
-     * @param {*} controller 
-     */
-    mkdir(controller) {
-        try {
-            if (!fs.existsSync(path.dirname(controller.file.filename)))
-                fs.mkdirSync(path.dirname(controller.file.filename), { recursive: true })
-        } catch (e) {
-            console.log (e.message, e.code, e.stack)
-        }
-    }
-
-    /**
+     * @access public
      * 
      * @param {*} controller 
      * @param {*} entry 
      */
     appendToFile(controller, entry) {
-        this.prepFilename(controller)
-        this.mkdir(controller)
+        this.#prepFilename(controller)
+        this.#mkdir(controller)
         try {
+            this.#backupFiles(controller)
             fs.appendFileSync(controller.file.filename, entry)
-            this.backupFiles(controller)
         } catch (e) {
             console.log (e.message, e.code, e.stack)
         }
     }
 
     /**
+     * @access protected
      * 
      * @param {*} controller 
      */
-    prepFilename(controller) {
+    #prepFilename(controller) {
         if (typeof controller.file.filename !== 'string' || controller.file.filename.length === 0) 
         throw new Error(`Invalid filename: ${controller.file.filename}`)
     
@@ -73,7 +61,7 @@ module.exports = class FileControl {
      * @param {*} controller 
      * @returns 
      */
-    prepOptions(controller) {
+    #prepOptions(controller) {
         let options = {
         }
         if ( typeof controller.file.maxsize_in_mb !== 'number' ) controller.file.maxsize_in_mb = 1
@@ -92,54 +80,16 @@ module.exports = class FileControl {
      * 
      * @param {*} controller 
      */
-    backupFiles(controller) {
-
-        let options = this.prepOptions(controller)
+    #backupFiles(controller) {
+        let options = this.#prepOptions(controller)
 
         // 1 megabyte equals 1000 kilobytes and 1000 kilobytes equals 1,000,000 bytes. 
         // rounded to the 4th decimal point
-        const stats = fs.statSync(controller.file.filename)
-        const mb = Math.round(((stats.size / 1000) / 1000 ) * 10000) /10000 
-        if (mb > 0.001) {
-            const backupFileName = this.backupFileName(controller.file.filename, options)
-        }
-        //console.log (`${mb}MB max is ${options.maxsize_in_mb}`)
-    }
-
-    /**
-     * 
-     * @param {*} filename 
-     * @param {*} options 
-     */
-    backupFileName(filename, options) {
-        
-        const dir = path.dirname(filename)
-        const ext = path.extname(filename)
-        const file = path.basename(filename, ext)
-        const date = (new Date().toISOString()).substring(0,10)
-        const gzip = options.gzip_backups ? '.gz' : ''
-
-        console.log (dir, file, ext)
-
-        const ls = fs.readdirSync(dir).filter(n => {return n.includes(file)}).sort()
-        console.log('ls:', ls)
-        console.log(`count=${ls.length} backups_kept=${options.backups_kept}`)
-
-
-        // CREATE PROCESS ORDER
-
-        for (let index = ls.length; index >= 0; index--) {
-           //console.log (ls[index])
-
-            if (ls[index] === undefined && index > options.backups_kept) {
-                this.deleteFile (path.join(dir, ls[index-1]))
-            } else {
-                if (ls[index] === undefined ) {
-                    this.rotateFile(path.join(dir, ls[index-1]), path.join(dir, `${file}_${date}_${index}${ext}${gzip}` ))
-                } else {
-                    if (ls[index-1] !== undefined)
-                        this.rotateFile(path.join(dir, ls[index-1]), path.join(dir, ls[index]))
-                }
+        const stats = this.#stat(controller.file.filename)
+        if (stats !== undefined) {
+            const mb = Math.round(((stats.size / 1000) / 1000 ) * 10000) /10000 
+            if (mb > options.maxsize_in_mb) {
+                this.#backupFileName(controller.file.filename, options)
             }
         }
     }
@@ -147,10 +97,60 @@ module.exports = class FileControl {
     /**
      * 
      * @param {*} filename 
+     * @param {*} options 
      */
-    deleteFile(filename) {
-        console.log('delete',filename)
-        fs.rmSync(filename)
+    #backupFileName(filename, options) {
+        
+        const dir = path.dirname(filename)
+        const ext = path.extname(filename)
+        const file = path.basename(filename, ext)
+        const date = (new Date().toISOString()).substring(0,10)
+        const gzip = options.gzip_backups ? '.gz' : ''
+
+        const ls = this.#readdirSync(dir, file)
+
+        // CREATE PROCESS ORDER
+        for (let index = ls.length; index >= 0; index--) {
+            if (ls[index] === undefined && index > options.backups_kept) {
+                this.#deleteFile (path.join(dir, ls[index-1]))
+            } else {
+                if (ls[index] === undefined ) {
+                    this.#rotateFile(path.join(dir, ls[index-1]), path.join(dir, `${file}_${date}_${index}${ext}${gzip}` ))
+                } else {
+                    if (ls[index-1] !== undefined)
+                        this.#rotateFile(path.join(dir, ls[index-1]), path.join(dir, ls[index]))
+                }
+            }
+        }
+    }
+
+    
+    /**
+     * 
+     * @param {*} dir 
+     * @param {*} file 
+     * @returns 
+     */
+    #readdirSync(dir, file) {
+        let result = undefined
+        try {
+            return fs.readdirSync(dir).filter(n => {return n.includes(file)}).sort()
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
+        return result
+    }
+
+    /**
+     * 
+     * @param {*} filename 
+     */
+    #deleteFile(filename) {
+        try {
+            fs.rmSync(filename)
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
     }
 
     /**
@@ -158,9 +158,41 @@ module.exports = class FileControl {
      * @param {*} filename 
      * @param {*} targetFile 
      */
-    rotateFile(filename, targetFile) {
-        console.log('move', filename, targetFile)
-        fs.renameSync(filename, targetFile)
+    #rotateFile(filename, targetFile) {
+        try {
+            fs.renameSync(filename, targetFile)
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
+    }
+
+    /**
+     * 
+     * @param {*} filename 
+     * @returns 
+     */
+    #stat(filename) {
+        let result = undefined
+        try {
+            if (fs.existsSync(filename))
+                result = fs.statSync(filename)
+        } catch(e) {
+            console.log (e.message, e.code, e.stack)
+        }
+        return result
+    }
+
+    /**
+     * 
+     * @param {*} controller 
+     */
+     #mkdir(controller) {
+        try {
+            if (!fs.existsSync(path.dirname(controller.file.filename)))
+                fs.mkdirSync(path.dirname(controller.file.filename), { recursive: true })
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
     }
 
 }

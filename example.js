@@ -29,11 +29,11 @@ const logish_config = {
             tofile: true,
             levels: ["info", "warn", "error", "fatal"],
             file: {
-                format : '[%date] [%level] %namespace %host %ip - %entry | %perf %data',
+                format : '[%date] [%level] %namespace %host %protocol %ip - %entry | %perf %data',
                 date : '%Y-%m-%d %H:%M:%S',
                 filename: "logs/app.log",   
-                maxsize_in_mb: 1,
-                backups_kept: 3, // logs/app_2022-07-14_1.log, logs/app_2022-07-14_2.log
+                maxsize_in_mb: 0.5,
+                backups_kept: 1, // logs/app_2022-07-14_1.log, logs/app_2022-07-14_2.log
                 gzip_backups : false
             }
         },
@@ -42,11 +42,11 @@ const logish_config = {
             tofile: true,
             levels: ["trace", "debug"],
             file: {
-                format : '[%date] [%level] %namespace %host %ip - %entry | %perf %data',
+                format : '[%date] [%level] %namespace %host %protocol %ip - %entry | %perf %data',
                 date : '%Y-%m-%d %H:%M:%S',
                 filename: "logs/dev.log",   
-                maxsize_in_mb: 1,
-                backups_kept: 3, // logs/dev_2022-07-14_1.log, logs/dev_2022-07-14_2.log
+                maxsize_in_mb: 0.5,
+                backups_kept: 1, // logs/dev_2022-07-14_1.log, logs/dev_2022-07-14_2.log
                 gzip_backups : false
             }
         }
@@ -75,7 +75,7 @@ var tether = 100.200
 var xp = true
 var arr = ['A', 'B', 'C']
 
-/*
+
 log.fatal(str, data, tether, xp, arr, (logEntry) => {
     console.log(logEntry)
 })
@@ -83,7 +83,7 @@ log.fatal(str, data, tether, xp, arr, (logEntry) => {
 log.error(str)
 log.warn(str)
 log.info(str)
-log.debug(str, data)
+log.debug(str, data, logish_config)
 log.trace(str)
 log.debug(str)
 log.trace(str)
@@ -95,7 +95,7 @@ setTimeout(() => {
     log.trace(str);
   }, "350") // 62000 seconds
 log.info('logEntry')
-*/
+
 
 log.info('Info log')
 log.debug('Debug log')

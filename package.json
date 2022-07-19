@@ -1,12 +1,14 @@
 {
   "name": "logish",
-  "version": "1.0.0",
-  "description": "Lightweight logging and debugging utility for Node.js and the browser",
+  "version": "0.5.0",
+  "description": "Lightweight logging and debugging utility for Node.js.",
   "author": "Michael N (webjestic)",
   "license": "MIT",
   "keywords": [
-    "debug",
+    "logger",
+    "logging",
     "log",
+    "debug",
     "debugger"
   ],
   "main": "index.js",
@@ -14,6 +16,6 @@
     "test": "node test.js"
   },
   "engines": {
-    "node": ">=6.0"
+    "node": ">=10.12.0"
   }
 }
