@@ -15,6 +15,7 @@ module.exports = class LogConfig {
      * @param {*} config 
      */
     constructor(config) {
+        if (!config) throw new Error ('No config proivded.')
         this.config = config
 
         this.validateRoot()

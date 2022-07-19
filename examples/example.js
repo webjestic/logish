@@ -53,7 +53,7 @@ const logish_config = {
     ]   
 }
 
-const log = require('./index')(logish_config, 'example')
+const log = require('../index')(logish_config, 'example')
 //const log = require('./index')(logish_config)
 
 // Register a listener
