@@ -24,14 +24,27 @@ module.exports = class FileControl {
      * @param {*} controller 
      * @param {*} entry 
      */
-    appendToFile(controller, entry) {
-        this.#prepFilename(controller)
-        this.#mkdir(controller)
-        try {
-            this.#backupFiles(controller)
-            fs.appendFileSync(controller.file.filename, entry)
-        } catch (e) {
-            console.log (e.message, e.code, e.stack)
+    appendToFile(controller, logEntry) {
+
+        let perf = ''
+        let entry = undefined
+        if (logEntry.perf_time != undefined) perf = `| ${logEntry.perf_time}`
+        if (logEntry.message !== undefined)  {
+            entry = `${logEntry.timeToString} [${logEntry.level}] ${logEntry.namespace} ${logEntry.hostname} - ${logEntry.message} ${perf}`
+            entry += os.EOL
+            this.#prepFilename(controller)
+            this.#mkdir(controller)
+            try {
+                this.#backupFiles(controller)
+                fs.appendFileSync(controller.file.filename, entry)
+                if (logEntry.data) 
+                    fs.appendFileSync(controller.file.filename, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
+            } catch (e) {
+                console.log (e.message, e.code, e.stack)
+            }
+            logEntry.fileEntry = entry
+        } else {
+            throw new Error ('No log message. Message is required.')
         }
     }
 

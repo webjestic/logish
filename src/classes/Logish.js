@@ -36,15 +36,15 @@ module.exports = class Logish extends EventEmitter {
 
         let configuration = new LogConfig(config)
         this.config = configuration.get()
-        this.setupEnv()
-        this.addLevelMethods()
+        this.#setupEnv()
+        this.#addLevelMethods()
     }
 
 
     /**
      * 
      */
-    setupEnv() {
+    #setupEnv() {
         this.env = {}
         Object.keys(process.env).forEach(key => {
             if (key.toUpperCase().includes('LOGISH') || key.toUpperCase().includes('DEBUG'))
@@ -61,7 +61,7 @@ module.exports = class Logish extends EventEmitter {
     /**
      * BUILD: add alias function names info(), error(), debug(), etc,.
      */
-    addLevelMethods() {
+    #addLevelMethods() {
         Object.keys(this.log_levels).forEach(method => {
             this[method.toLowerCase()] = this.logMethods.bind(this, method.toLowerCase())
         })
@@ -115,7 +115,7 @@ module.exports = class Logish extends EventEmitter {
             }
         }   
 
-        this.log(logEntry)
+        this.#log(logEntry)
         if (callback) callback(logEntry)
     }
 
@@ -124,10 +124,10 @@ module.exports = class Logish extends EventEmitter {
      * 
      * @param {object} logEntry 
      */
-    log(logEntry) {
-        this.performanceMark(logEntry)
-        this.logToConsole(logEntry)
-        this.logToFile(logEntry)
+    #log(logEntry) {
+        this.#performanceMark(logEntry)
+        this.#logToConsole(logEntry)
+        this.#logToFile(logEntry)
         // Raise an event
         this.emit('LogEvent', logEntry)
     }
@@ -136,7 +136,7 @@ module.exports = class Logish extends EventEmitter {
      * 
      * @param {object} logEntry 
      */
-    performanceMark(logEntry) {
+    #performanceMark(logEntry) {
         if (logEntry.level === 'DEBUG' || logEntry.level === 'TRACE') {
             if (this.config.debugging.log_perf_hooks) {
                 const performance = new Performance()
@@ -150,11 +150,11 @@ module.exports = class Logish extends EventEmitter {
      * @param {object} logEntry 
      * @returns 
      */
-    logToConsole(logEntry) {
+    #logToConsole(logEntry) {
         if (this.config.console.display_levels.indexOf(logEntry.level.toLowerCase()) < 0) return false
 
         let consoleControl = new ConsoleControl()
-        consoleControl.log(this.config.console, logEntry)
+        consoleControl.appendToConsole(this.config.console, logEntry)
     }
 
     /**
@@ -162,14 +162,8 @@ module.exports = class Logish extends EventEmitter {
      * @param {object} logEntry 
      * @returns 
      */
-    logToFile(logEntry) {
+    #logToFile(logEntry) {
         if (!this.config.file_controllers) return false
-
-        let perf = ''
-        let entry = undefined
-        if (logEntry.perf_time != undefined) perf = `| ${logEntry.perf_time}`
-        entry = `${logEntry.timeToString} [${logEntry.level}] ${logEntry.namespace} ${logEntry.hostname} - ${logEntry.message} ${perf}`
-        entry += os.EOL
 
         // if a file_controller exists, log tofile is true, and the level being logged 
         // is part of the controller, then attemtp to log to file. file_controllers are
@@ -178,16 +172,12 @@ module.exports = class Logish extends EventEmitter {
         if (this.config.file_controllers) {
             try {
                 for (let controller of this.config.file_controllers) {
-                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1)) {
-                        fileControl.appendToFile(controller, entry)
-                        if (logEntry.data) 
-                            fileControl.appendToFile(controller, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
-                    }
+                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1))
+                        fileControl.appendToFile(controller, logEntry)
                 }
             } catch (e) {
                 console.log(e)
             }
         }
-        if (entry !== undefined) logEntry.fileEntry = entry
     }
 }

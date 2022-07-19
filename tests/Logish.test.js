@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 const Log = require('../src/classes/Logish')
 
 test('new Logish without params to throw an error.', () => {

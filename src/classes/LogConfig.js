@@ -188,9 +188,6 @@ module.exports = class LogConfig {
         if (controller.file.format === undefined || typeof controller.file.format !== 'string' )
             throw Error ('file_controllers.controller.file.format is not typeof "string"')
 
-        if (controller.file.date === undefined || typeof controller.file.date !== 'string' )
-            throw Error ('file_controllers.controller.file.date is not typeof "string"')
-
         if (controller.file.filename === undefined || typeof controller.file.filename !== 'string' )
             throw Error ('file_controllers.controller.file.filename is not typeof "string"')
 

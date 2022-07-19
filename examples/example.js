@@ -30,7 +30,6 @@ const logish_config = {
             levels: ['info', 'warn', 'error', 'fatal'],
             file: {
                 format : '[%date] [%level] %namespace %host %protocol %ip - %entry | %perf %data',
-                date : '%Y-%m-%d %H:%M:%S',
                 filename: 'logs/app.log',   
                 maxsize_in_mb: 0.5,
                 backups_kept: 1, // logs/app_2022-07-14_1.log, logs/app_2022-07-14_2.log
@@ -43,7 +42,6 @@ const logish_config = {
             levels: ['trace', 'debug'],
             file: {
                 format : '[%date] [%level] %namespace %host %protocol %ip - %entry | %perf %data',
-                date : '%Y-%m-%d %H:%M:%S',
                 filename: 'logs/dev.log',   
                 maxsize_in_mb: 0.5,
                 backups_kept: 1, // logs/dev_2022-07-14_1.log, logs/dev_2022-07-14_2.log
@@ -60,14 +58,14 @@ const log = require('../index')(logish_config, 'example')
 log.on('LogEvent', (logEntry) => {
     
     if (logEntry.data) 
-        console.log (logEntry.console, logEntry.data)
+        console.log ('LogEvent:', logEntry.console, logEntry.data)
     else
-        console.log (logEntry.console)
+        console.log ('LogEvent:',logEntry.console)
     
     // if (logEntry.level === 'INFO') console.log(logEntry)
 })
 
-
+/*
 var str = 'Hello Logish'
 var data = {name: 'Joe', age: 30}
 var tether = 100.200
@@ -98,6 +96,9 @@ log.info('logEntry')
 
 log.info('Info log')
 log.debug('Debug log')
+*/
+
+log.info(1)
 
 
 /*
