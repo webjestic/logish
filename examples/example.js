@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 
 /**
@@ -126,49 +126,4 @@ BgBlue = "\x1b[44m"
 BgMagenta = "\x1b[45m"
 BgCyan = "\x1b[46m"
 BgWhite = "\x1b[47m"
-*/
-
-
-/*
-
-NODE start
-COMMON: function setup(env)
-COMMON: function enable(namespaces) : namespace  app:test
-NODE: function save(namespaces)
-COMMON: end function enable(namespaces) 
-COMMON: end function setup(env)
-COMMON: function createDebug(namespace) : namespace app:test
-COMMON: function selectColor(namespace) : namespace app:test
-COMMON: end function selectColor(namespace) : hash 1133660747
-NODE:  function init(debug)
-COMMON: end function createDebug()
-
-COMMON: function debug(...args) : args [ 'Hello', 'World', { name: 'John', lname: 'Doe' } ]
-COMMON:  function enable(name) : name app:test
-COMMON: function debug(...args) : enabled true
-COMMON: if (typeof args[0] !== 'string') { : args[0] Hello
-NODE: function formatArgs(args)
-NODE: end function formatArgs(args)
-NODE: function log(...args)
-  app:test Hello World { name: 'John', lname: 'Doe' } +0ms
-COMMON: end function debug()
-
-COMMON: function debug(...args) : args [ 'Goodbye', 'World' ]
-COMMON: function debug(...args) : enabled true
-COMMON: if (typeof args[0] !== 'string') { : args[0] Goodbye
-NODE: function formatArgs(args)
-NODE: end function formatArgs(args)
-NODE: function log(...args)
-  app:test Goodbye World +1ms
-COMMON: end function debug()
-
-COMMON: function debug(...args) : args [ 'Delayed for 1 second.' ]
-COMMON: function debug(...args) : enabled true
-COMMON: if (typeof args[0] !== 'string') { : args[0] Delayed for 1 second.
-NODE: function formatArgs(args)
-NODE: end function formatArgs(args)
-NODE: function log(...args)
-  app:test Delayed for 1 second. +1s
-COMMON: end function debug()
-
 */

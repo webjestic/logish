@@ -19,6 +19,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "lint": "eslint . ",
     "prepare": "husky install"
   },
   "engines": {
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "eslint": "^8.20.0",
+    "eslint-plugin-jest": "^26.6.0",
     "husky": "^8.0.1",
     "jest": "^28.1.3"
   }

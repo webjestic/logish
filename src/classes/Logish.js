@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 const EventEmitter = require('events')
 const os = require('os')

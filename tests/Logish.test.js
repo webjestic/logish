@@ -23,8 +23,3 @@ test('new Logish with empty config and a namespace.', () => {
     expect(log.namespace).toBe('logish:tests')
 })
 
-test('new Logish with empty config and a namespace.', () => {
-
-    const log = new Log({}, 'logish:tests')
-    expect(log.info('test')).toBe()
-})

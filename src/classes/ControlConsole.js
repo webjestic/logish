@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 /**
  * 
@@ -21,7 +21,7 @@ module.exports = class ConsoleControl {
      * @param {*} logEntry 
      */
     log(consoleOptions, logEntry) {
-        const resetColor = "\x1b[0m"
+        const resetColor = '\x1b[0m'
         const levelColor = consoleOptions.colors[logEntry.level.toLowerCase()]
 
         let perf = ''

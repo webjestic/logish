@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 
 const { performance } = require('perf_hooks') // https://nodejs.org/api/perf_hooks.html#performancegetentries
@@ -43,9 +43,9 @@ module.exports = class Performance {
                 if (ms > 60000) m = Math.round( ((ms/1000/60) % 60 ) )
 
                 let tmeasure = ''
-                if (m>0) tmeasure = `m:${m}:${s}+` 
-                else if (s>0) tmeasure = `s:${s}+`
-                else tmeasure =`ms:${ms}+`
+                if (m>0) tmeasure = `${m}:${s}(m)` 
+                else if (s>0) tmeasure = `${s}(s)`
+                else tmeasure =`${ms}(ms)`
 
                 logEntry.perf_time = tmeasure
                 performance.clearMarks(logEntry.level)
