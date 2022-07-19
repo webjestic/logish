@@ -19,13 +19,13 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "prepare": "husky install",
-    "scriptname": "husky install"
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=10.12.0"
   },
   "devDependencies": {
+    "eslint": "^8.20.0",
     "husky": "^8.0.1",
     "jest": "^28.1.3"
   }

@@ -42,7 +42,7 @@ module.exports = class FileControl {
      */
     #prepFilename(controller) {
         if (typeof controller.file.filename !== 'string' || controller.file.filename.length === 0) 
-        throw new Error(`Invalid filename: ${controller.file.filename}`)
+            throw new Error(`Invalid filename: ${controller.file.filename}`)
     
         if( (controller.file.filename.endsWith(path.sep))  )
             throw new Error(`Filename is a directory: ${controller.file.filename}`)
@@ -186,7 +186,7 @@ module.exports = class FileControl {
      * 
      * @param {*} controller 
      */
-     #mkdir(controller) {
+    #mkdir(controller) {
         try {
             if (!fs.existsSync(path.dirname(controller.file.filename)))
                 fs.mkdirSync(path.dirname(controller.file.filename), { recursive: true })

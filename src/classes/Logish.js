@@ -30,7 +30,7 @@ module.exports = class Logish extends EventEmitter {
         if (namespace) this.namespace = namespace 
         else this.namespace = ''
 
-        this.log_levels = Object.freeze({ "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3, "ERROR": 4, "FATAL": 5 })
+        this.log_levels = Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 })
         this.hostname = os.hostname()
         this.log_levelid = -1
 
@@ -48,8 +48,8 @@ module.exports = class Logish extends EventEmitter {
         this.env = {}
         Object.keys(process.env).forEach(key => {
             if (key.toUpperCase().includes('LOGISH') || key.toUpperCase().includes('DEBUG'))
-                this.env[key] = process.env[key];
-        });
+                this.env[key] = process.env[key]
+        })
         
         this.log_levelid = this.log_levels[this.config.log_level]
 
@@ -63,7 +63,7 @@ module.exports = class Logish extends EventEmitter {
      */
     addLevelMethods() {
         Object.keys(this.log_levels).forEach(method => {
-             this[method.toLowerCase()] = this.logMethods.bind(this, method.toLowerCase())
+            this[method.toLowerCase()] = this.logMethods.bind(this, method.toLowerCase())
         })
     }
       
@@ -73,6 +73,7 @@ module.exports = class Logish extends EventEmitter {
      * 
      * @param  {...any} args 
      */
+    // eslint-disable-next-line no-unused-vars
     logMethods(...args) {
 
         // exit if the log level attempt less than the confugured log level.
@@ -83,7 +84,7 @@ module.exports = class Logish extends EventEmitter {
         // check to see if the namespace matches a defined env namespace
         // scenario: DEBUG=express and require('logish')(config, 'express')
         if ((levelid <= 1) && (this.config.debugging.log_only_namespace))
-        if ( (this.env['DEBUG'].split(',')).indexOf(this.namespace) === -1) return false
+            if ( (this.env['DEBUG'].split(',')).indexOf(this.namespace) === -1) return false
 
         const dtime = Date.now()
         var callback = undefined
