@@ -27,7 +27,7 @@ module.exports = class FileControl {
     appendToFile(controller, logEntry) {
 
         let entry = undefined
-        if (logEntry.perf_time != undefined) logEntry.perf_time = `| ${logEntry.perf_time}`
+        if (logEntry.perf_time != undefined) logEntry.perf_time = `${logEntry.perf_time}`
         if (logEntry.message !== undefined)  {
         //    entry = `${logEntry.timeToString} [${logEntry.level}] ${logEntry.namespace} ${logEntry.hostname} - ${logEntry.message} ${perf}`
         //     entry += os.EOL
@@ -48,6 +48,12 @@ module.exports = class FileControl {
         }
     }
 
+    /**
+     * 
+     * @param {*} formatStr 
+     * @param {*} logEntry 
+     * @returns 
+     */
     #formatEntry(formatStr, logEntry) {
 
         if (logEntry.timeToString !== undefined) formatStr = formatStr.replace('%date', logEntry.timeToString)

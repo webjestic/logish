@@ -21,7 +21,7 @@ const logish_config = {
             info    : '\x1b[37m',    warn    : '\x1b[33m',
             error   : '\x1b[35m',    fatal   : '\x1b[31m'
         }
-    },
+    } ,
     file_controllers : [
         {
             name: 'production',
@@ -47,7 +47,7 @@ const logish_config = {
                 gzip_backups : false
             }
         }
-    ]   
+    ]
 }
 
 const log = require('../index')(logish_config, 'example')
@@ -56,17 +56,14 @@ const log = require('../index')(logish_config, 'example')
 // Register a listener
 log.on('LogEvent', (logEntry) => {
     
-    if (logEntry.data) 
-        console.log ('LogEvent:', logEntry.console, logEntry.data)
-    else
-        console.log ('LogEvent:',logEntry.console)
+    console.log('LogEvent', logEntry)
     
     // if (logEntry.level === 'INFO') console.log(logEntry)
 })
 
 /*
 var str = 'Hello Logish'
-var data = {name: 'Joe', age: 30}
+var data = {name: 'Joe', age: 30} 
 var tether = 100.200
 var xp = true
 var arr = ['A', 'B', 'C']
@@ -98,9 +95,21 @@ log.debug('Debug log')
 */
 
 log.debug('debug test')
-log.debug('message', 1, 'hope', ['item', 'items'], {'obj': 'yes', 'class': false}, (logEntry) => {
-    console.log(logEntry)
+log.debug('debug test')
+log.debug('debug test')
+log.debug('debug test')
+log.debug('debug test')
+log.debug('debug test')
+log.debug('debug test')
+log.debug('debug test')
+log.debug('debug test', (logEntry) => {
+    console.log(logEntry.perf_time)
 })
+/*
+log.debug('message', 1, 'hope', ['item', 'items'], {'obj': 'yes', 'class': false}, (logEntry) => {
+    console.log(logEntry.perf_time)
+})
+*/
 
 
 /*

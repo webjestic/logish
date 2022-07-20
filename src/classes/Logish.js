@@ -19,6 +19,10 @@ const LogConfig = require('./LogConfig')
  */
 module.exports = class Logish extends EventEmitter {
 
+    #performance = undefined
+    #consoleControl = undefined
+    #fileControl = undefined
+
     /**
      * 
      * @param {object} config 
@@ -38,6 +42,10 @@ module.exports = class Logish extends EventEmitter {
         this.config = configuration.get()
         this.#setupEnv()
         this.#addLevelMethods()
+
+        this.#performance = new Performance()
+        this.#consoleControl = new ConsoleControl()
+        this.#fileControl = new FileControl()
     }
 
 
@@ -108,7 +116,6 @@ module.exports = class Logish extends EventEmitter {
         let dataIndex = 0
         if (arguments.length > 2) {
             for (let i = 2; i <= arguments.length-1; i++) {
-
                 switch (typeof arguments[i]) {
                 case 'function' : 
                     callback = arguments[i]
@@ -127,7 +134,6 @@ module.exports = class Logish extends EventEmitter {
                 }
             }
         }   
-
         this.#log(logEntry)
         if (callback) callback(logEntry)
     }
@@ -141,8 +147,7 @@ module.exports = class Logish extends EventEmitter {
         this.#performanceMark(logEntry)
         this.#logToConsole(logEntry)
         this.#logToFile(logEntry)
-        // Raise an event
-        this.emit('LogEvent', logEntry)
+        this.emit('LogEvent', logEntry) // Raise an event
     }
 
     /**
@@ -152,8 +157,7 @@ module.exports = class Logish extends EventEmitter {
     #performanceMark(logEntry) {
         if (logEntry.level === 'DEBUG' || logEntry.level === 'TRACE') {
             if (this.config.debugging.log_perf_hooks) {
-                const performance = new Performance()
-                performance.measure(logEntry)
+                this.#performance.measure(logEntry)
             }
         }
     }
@@ -166,8 +170,8 @@ module.exports = class Logish extends EventEmitter {
     #logToConsole(logEntry) {
         if (this.config.console.display_levels.indexOf(logEntry.level.toLowerCase()) < 0) return false
 
-        let consoleControl = new ConsoleControl()
-        consoleControl.appendToConsole(this.config.console, logEntry)
+        
+        this.#consoleControl.appendToConsole(this.config.console, logEntry)
     }
 
     /**
@@ -181,12 +185,11 @@ module.exports = class Logish extends EventEmitter {
         // if a file_controller exists, log tofile is true, and the level being logged 
         // is part of the controller, then attemtp to log to file. file_controllers are
         // not required and therefore, may not exist in the config.
-        let fileControl = new FileControl()
         if (this.config.file_controllers) {
             try {
                 for (let controller of this.config.file_controllers) {
                     if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1))
-                        fileControl.appendToFile(controller, logEntry)
+                        this.#fileControl.appendToFile(controller, logEntry)
                 }
             } catch (e) {
                 console.log(e)
