@@ -16,8 +16,10 @@ export class Controllers {
 
     addController(controller) {
         debug('addController %O', controller)
-        if (typeof controller.name !== 'string') throw new Error('controller.name is required but is not typeof string.')
-        if (typeof controller.module !== 'string') throw new Error('controller.module is required but is not typeof string.')
+        if (typeof controller.name !== 'string') 
+            throw new Error('controller.name is required but is not typeof string.')
+        if (typeof controller.module !== 'string') 
+            throw new Error('controller.module is required but is not typeof string.')
         this.#loadController(controller)
     }
 
@@ -27,10 +29,6 @@ export class Controllers {
         const mod = import(controller.module)
             .then((ControllerClass) => {
                 debug('Controller added: %O', controller.name)
-
-               // debug('ControllerClass %O', ControllerClass)
-               // const NewObject = ControllerClass(controller)
-               // debug('NewObject %O', NewObject)
 
                 const NewObject = new ControllerClass[controller.name](controller)
                 debug('ControllerClass %O', typeof ControllerClass[controller.name])

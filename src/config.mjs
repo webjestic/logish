@@ -11,6 +11,10 @@ export class Config {
     #defaultConfig = {
         levels : Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 }),
         level : 'INFO',
+        debugging : {
+            namespaceOnly : false,
+            performance_time : true
+        },
         controllers : [
             {
                 name: 'ControlConsole',
