@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 
 /**
@@ -15,6 +15,7 @@ module.exports = class LogConfig {
      * @param {*} config 
      */
     constructor(config) {
+        if (!config) throw new Error ('No config proivded.')
         this.config = config
 
         this.validateRoot()
@@ -34,15 +35,20 @@ module.exports = class LogConfig {
             this.config.log_level = this.config.log_level.toUpperCase()
             let valid = false
             switch (this.config.log_level) {
-                case 'TRACE' : valid = true
-                case 'DEBUG' : valid = true
-                case 'INFO' : valid = true
-                case "WARN" : valid = true
-                case "ERROR" : valid = true
-                case "FATAL" : valid = true 
+            case 'TRACE' : valid = true
+                break
+            case 'DEBUG' : valid = true
+                break
+            case 'INFO' : valid = true
+                break
+            case 'WARN' : valid = true
+                break
+            case 'ERROR' : valid = true
+                break
+            case 'FATAL' : valid = true 
             }
             if (!valid) {
-                throw error (`value for config.log_level is not valid.`)
+                throw new Error ('value for config.log_level is not valid.')
             }
         }
     }
@@ -78,49 +84,44 @@ module.exports = class LogConfig {
     validateConsole() {
         if (this.config.console === undefined) {
             this.config.console = {     // default
-                format : '%namespace [%level] %entry %data | %perf',
                 use_colors : true,
-                display_levels : ["trace", "debug", "info", "warn", "error", "fatal"],
+                display_levels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
                 colors : {
-                    trace   : "\x1b[32m",    debug   : "\x1b[36m",
-                    info    : "\x1b[37m",    warn    : "\x1b[33m",
-                    error   : "\x1b[35m",    fatal   : "\x1b[31m"
+                    trace   : '\x1b[32m',    debug   : '\x1b[36m',
+                    info    : '\x1b[37m',    warn    : '\x1b[33m',
+                    error   : '\x1b[35m',    fatal   : '\x1b[31m'
                 }
             }
         } else {
 
-            if (this.config.console.format === undefined)
-                this.config.console.format = '%namespace [%level] %entry %data | %perf' // default
             if (this.config.console.use_colors === undefined) 
                 this.config.console.use_colors = true   // default
             if (this.config.console.display_levels === undefined) 
-                this.config.console.display_levels = ["trace", "debug", "info", "warn", "error", "fatal"] // default
+                this.config.console.display_levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'] // default
 
             if (this.config.console.colors === undefined) 
                 this.config.console.colors = {  // default
-                    trace   : "\x1b[32m",    debug   : "\x1b[36m",
-                    info    : "\x1b[37m",    warn    : "\x1b[33m",
-                    error   : "\x1b[35m",    fatal   : "\x1b[31m"
+                    trace   : '\x1b[32m',    debug   : '\x1b[36m',
+                    info    : '\x1b[37m',    warn    : '\x1b[33m',
+                    error   : '\x1b[35m',    fatal   : '\x1b[31m'
                 }                
             if (this.config.console.colors.trace === undefined)
-                this.config.console.colors.trace = "\x1b[32m"   // default
+                this.config.console.colors.trace = '\x1b[32m'   // default
             if (this.config.console.colors.debug === undefined)
-                this.config.console.colors.trace = "\x1b[36m"   // default
+                this.config.console.colors.trace = '\x1b[36m'   // default
             if (this.config.console.colors.info === undefined)
-                this.config.console.colors.info = "\x1b[37m"    // default
+                this.config.console.colors.info = '\x1b[37m'    // default
             if (this.config.console.colors.warn === undefined) 
-                this.config.console.colors.warn = "\x1b[33m"    // default
+                this.config.console.colors.warn = '\x1b[33m'    // default
             if (this.config.console.colors.error === undefined)   
-                this.config.console.colors.error = "\x1b[35m"   // default
+                this.config.console.colors.error = '\x1b[35m'   // default
             if (this.config.console.colors.fatal === undefined) 
-                this.config.console.colors.fatal = "\x1b[31m"   // default
+                this.config.console.colors.fatal = '\x1b[31m'   // default
 
-            if ( typeof this.config.console.format !== 'string' )
-                throw Error ('config.console.format is not of type "string"')
             if ( typeof this.config.console.use_colors !== 'boolean')
-                throw Error ('config.console.format is not of type "boolean"')
+                throw Error ('config.console.use_colors is not of type "boolean"')
             if ( typeof this.config.console.display_levels !== 'object')
-                throw Error ('config.console.format is not of type "object"')
+                throw Error ('config.console.display_levels is not of type "object"')
             if ( typeof this.config.console !== 'object' )
                 throw Error ('config.console is not of type "object"')
             if ( typeof this.config.console.colors.trace !== 'string' )
@@ -181,9 +182,6 @@ module.exports = class LogConfig {
 
         if (controller.file.format === undefined || typeof controller.file.format !== 'string' )
             throw Error ('file_controllers.controller.file.format is not typeof "string"')
-
-        if (controller.file.date === undefined || typeof controller.file.date !== 'string' )
-            throw Error ('file_controllers.controller.file.date is not typeof "string"')
 
         if (controller.file.filename === undefined || typeof controller.file.filename !== 'string' )
             throw Error ('file_controllers.controller.file.filename is not typeof "string"')

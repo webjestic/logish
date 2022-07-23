@@ -93,3 +93,7 @@ upon reaching maxium size.
 
 
 Shamelessly *inspired by* the concepts and code from [debug](https://www.npmjs.com/package/debug), [winston](https://www.npmjs.com/package/winston) and [log4js](https://www.npmjs.com/package/log4js).
+
+### Code of Conduct
+
+Logish ESLint adheres to the [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/main/CODE_OF_CONDUCT.md)

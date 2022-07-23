@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 const EventEmitter = require('events')
 const os = require('os')
@@ -19,6 +19,10 @@ const LogConfig = require('./LogConfig')
  */
 module.exports = class Logish extends EventEmitter {
 
+    #performance = undefined
+    #consoleControl = undefined
+    #fileControl = undefined
+
     /**
      * 
      * @param {object} config 
@@ -30,26 +34,30 @@ module.exports = class Logish extends EventEmitter {
         if (namespace) this.namespace = namespace 
         else this.namespace = ''
 
-        this.log_levels = Object.freeze({ "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3, "ERROR": 4, "FATAL": 5 })
+        this.log_levels = Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 })
         this.hostname = os.hostname()
         this.log_levelid = -1
 
         let configuration = new LogConfig(config)
         this.config = configuration.get()
-        this.setupEnv()
-        this.addLevelMethods()
+        this.#setupEnv()
+        this.#addLevelMethods()
+
+        this.#performance = new Performance()
+        this.#consoleControl = new ConsoleControl()
+        this.#fileControl = new FileControl()
     }
 
 
     /**
      * 
      */
-    setupEnv() {
+    #setupEnv() {
         this.env = {}
         Object.keys(process.env).forEach(key => {
             if (key.toUpperCase().includes('LOGISH') || key.toUpperCase().includes('DEBUG'))
-                this.env[key] = process.env[key];
-        });
+                this.env[key] = process.env[key]
+        })
         
         this.log_levelid = this.log_levels[this.config.log_level]
 
@@ -61,9 +69,9 @@ module.exports = class Logish extends EventEmitter {
     /**
      * BUILD: add alias function names info(), error(), debug(), etc,.
      */
-    addLevelMethods() {
+    #addLevelMethods() {
         Object.keys(this.log_levels).forEach(method => {
-             this[method.toLowerCase()] = this.logMethods.bind(this, method.toLowerCase())
+            this[method.toLowerCase()] = this.logMethods.bind(this, method.toLowerCase())
         })
     }
       
@@ -73,6 +81,7 @@ module.exports = class Logish extends EventEmitter {
      * 
      * @param  {...any} args 
      */
+    // eslint-disable-next-line no-unused-vars
     logMethods(...args) {
 
         // exit if the log level attempt less than the confugured log level.
@@ -83,7 +92,7 @@ module.exports = class Logish extends EventEmitter {
         // check to see if the namespace matches a defined env namespace
         // scenario: DEBUG=express and require('logish')(config, 'express')
         if ((levelid <= 1) && (this.config.debugging.log_only_namespace))
-        if ( (this.env['DEBUG'].split(',')).indexOf(this.namespace) === -1) return false
+            if ( (this.env['DEBUG'].split(',')).indexOf(this.namespace) === -1) return false
 
         const dtime = Date.now()
         var callback = undefined
@@ -101,20 +110,31 @@ module.exports = class Logish extends EventEmitter {
         logEntry.console = undefined
         logEntry.fileEntry = undefined
 
-        // if any data has been added to the log event, build 
-        // the data object. if a callback function is discovered assign it.
+        // if any objects has been added to the log event, build the data object.
+        // update the logEntry.message with any non-object items
+        // if a callback function is discovered assign it.
+        let dataIndex = 0
         if (arguments.length > 2) {
-            logEntry.data = {}
             for (let i = 2; i <= arguments.length-1; i++) {
-                if ((typeof arguments[i]) === 'function') {
+                switch (typeof arguments[i]) {
+                case 'function' : 
                     callback = arguments[i]
-                } else {
-                    logEntry.data[i-2] = arguments[i]
+                    break
+                case 'object' : 
+                    if (Array.isArray(arguments[i]))
+                        logEntry.message += ' [ ' + arguments[i] + ' ]'
+                    else {
+                        if (logEntry.data === undefined) logEntry.data = {}
+                        logEntry.data[dataIndex] = arguments[i]
+                        dataIndex++
+                    }
+                    break
+                default :
+                    logEntry.message += ' ' + arguments[i]
                 }
             }
         }   
-
-        this.log(logEntry)
+        this.#log(logEntry)
         if (callback) callback(logEntry)
     }
 
@@ -123,23 +143,21 @@ module.exports = class Logish extends EventEmitter {
      * 
      * @param {object} logEntry 
      */
-    log(logEntry) {
-        this.performanceMark(logEntry)
-        this.logToConsole(logEntry)
-        this.logToFile(logEntry)
-        // Raise an event
-        this.emit('LogEvent', logEntry)
+    #log(logEntry) {
+        this.#performanceMark(logEntry)
+        this.#logToConsole(logEntry)
+        this.#logToFile(logEntry)
+        this.emit('LogEvent', logEntry) // Raise an event
     }
 
     /**
      * 
      * @param {object} logEntry 
      */
-    performanceMark(logEntry) {
+    #performanceMark(logEntry) {
         if (logEntry.level === 'DEBUG' || logEntry.level === 'TRACE') {
             if (this.config.debugging.log_perf_hooks) {
-                const performance = new Performance()
-                performance.measure(logEntry)
+                this.#performance.measure(logEntry)
             }
         }
     }
@@ -149,11 +167,11 @@ module.exports = class Logish extends EventEmitter {
      * @param {object} logEntry 
      * @returns 
      */
-    logToConsole(logEntry) {
+    #logToConsole(logEntry) {
         if (this.config.console.display_levels.indexOf(logEntry.level.toLowerCase()) < 0) return false
 
-        let consoleControl = new ConsoleControl()
-        consoleControl.log(this.config.console, logEntry)
+        
+        this.#consoleControl.appendToConsole(this.config.console, logEntry)
     }
 
     /**
@@ -161,32 +179,21 @@ module.exports = class Logish extends EventEmitter {
      * @param {object} logEntry 
      * @returns 
      */
-    logToFile(logEntry) {
+    #logToFile(logEntry) {
         if (!this.config.file_controllers) return false
-
-        let perf = ''
-        let entry = undefined
-        if (logEntry.perf_time != undefined) perf = `| ${logEntry.perf_time}`
-        entry = `${logEntry.timeToString} [${logEntry.level}] ${logEntry.namespace} ${logEntry.hostname} - ${logEntry.message} ${perf}`
-        entry += os.EOL
 
         // if a file_controller exists, log tofile is true, and the level being logged 
         // is part of the controller, then attemtp to log to file. file_controllers are
         // not required and therefore, may not exist in the config.
-        let fileControl = new FileControl()
         if (this.config.file_controllers) {
             try {
                 for (let controller of this.config.file_controllers) {
-                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1)) {
-                        fileControl.appendToFile(controller, entry)
-                        if (logEntry.data) 
-                            fileControl.appendToFile(controller, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
-                    }
+                    if ((controller.tofile) && (controller.levels.indexOf(logEntry.level.toLowerCase()) > -1))
+                        this.#fileControl.appendToFile(controller, logEntry)
                 }
             } catch (e) {
                 console.log(e)
             }
         }
-        if (entry !== undefined) logEntry.fileEntry = entry
     }
 }

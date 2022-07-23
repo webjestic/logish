@@ -1,4 +1,4 @@
 /**
  * 
  */
-module.exports = require('./classes/Logish');
+module.exports = require('./classes/Logish')

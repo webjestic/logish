@@ -1,7 +1,7 @@
 /**
  * 
  */
-'use strict'
+
 
 const os = require('os')
 const fs = require('fs')
@@ -24,15 +24,63 @@ module.exports = class FileControl {
      * @param {*} controller 
      * @param {*} entry 
      */
-    appendToFile(controller, entry) {
-        this.#prepFilename(controller)
-        this.#mkdir(controller)
-        try {
-            this.#backupFiles(controller)
-            fs.appendFileSync(controller.file.filename, entry)
-        } catch (e) {
-            console.log (e.message, e.code, e.stack)
+    appendToFile(controller, logEntry) {
+
+        let entry = undefined
+        if (logEntry.perf_time != undefined) logEntry.perf_time = `${logEntry.perf_time}`
+        if (logEntry.message !== undefined)  {
+        //    entry = `${logEntry.timeToString} [${logEntry.level}] ${logEntry.namespace} ${logEntry.hostname} - ${logEntry.message} ${perf}`
+        //     entry += os.EOL
+            entry = this.#formatEntry(controller.file.format, logEntry)
+            this.#prepFilename(controller)
+            this.#mkdir(controller)
+            try {
+                this.#backupFiles(controller)
+                fs.appendFileSync(controller.file.filename, entry)
+                if (logEntry.data) 
+                    fs.appendFileSync(controller.file.filename, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
+            } catch (e) {
+                console.log (e.message, e.code, e.stack)
+            }
+            logEntry.fileEntry = entry
+        } else {
+            throw new Error ('No log message. Message is required.')
         }
+    }
+
+    /**
+     * 
+     * @param {*} formatStr 
+     * @param {*} logEntry 
+     * @returns 
+     */
+    #formatEntry(formatStr, logEntry) {
+
+        if (logEntry.timeToString !== undefined) formatStr = formatStr.replace('%date', logEntry.timeToString)
+        else formatStr = formatStr.replace('%date', '')
+
+        if (logEntry.level !== undefined) formatStr = formatStr.replace('%level', logEntry.level)
+        else formatStr = formatStr.replace('%level', '')
+
+        if (logEntry.namespace !== undefined) formatStr = formatStr.replace('%namespace', logEntry.namespace)
+        else formatStr = formatStr.replace('%namespace', '')
+
+        if (logEntry.hostname !== undefined) formatStr = formatStr.replace('%host', logEntry.hostname)
+        else formatStr = formatStr.replace('%host', '')
+        
+        if (logEntry.message !== undefined) formatStr = formatStr.replace('%entry', logEntry.message)
+        else formatStr = formatStr.replace('%entry', '')
+        
+        if (logEntry.perf_time !== undefined) formatStr = formatStr.replace('%perf', logEntry.perf_time)
+        else formatStr = formatStr.replace('%perf', '')
+        
+        if (logEntry.protocol !== undefined) formatStr = formatStr.replace('%protocol', logEntry.protocol)
+        else formatStr = formatStr.replace('%protocol', '')
+        
+        if (logEntry.ip !== undefined) formatStr = formatStr.replace('%ip', logEntry.ip)
+        else formatStr = formatStr.replace('%ip', '')
+        
+        return (formatStr + os.EOL)
     }
 
     /**
@@ -42,7 +90,7 @@ module.exports = class FileControl {
      */
     #prepFilename(controller) {
         if (typeof controller.file.filename !== 'string' || controller.file.filename.length === 0) 
-        throw new Error(`Invalid filename: ${controller.file.filename}`)
+            throw new Error(`Invalid filename: ${controller.file.filename}`)
     
         if( (controller.file.filename.endsWith(path.sep))  )
             throw new Error(`Filename is a directory: ${controller.file.filename}`)
@@ -186,7 +234,7 @@ module.exports = class FileControl {
      * 
      * @param {*} controller 
      */
-     #mkdir(controller) {
+    #mkdir(controller) {
         try {
             if (!fs.existsSync(path.dirname(controller.file.filename)))
                 fs.mkdirSync(path.dirname(controller.file.filename), { recursive: true })
