@@ -45,6 +45,7 @@ export class Logish extends EventEmitter {
             this.#resolveConstructorArgs(customConfig, namespace)
         )
         debug('namespace %o', this.#namespace)
+        debug('config.json %O', this.#config.json)
 
         // create an instance of the Controllers class
         this.#controllers = new Controllers()
@@ -158,11 +159,43 @@ export class Logish extends EventEmitter {
             throw new Error('Invalid log level method alias used. Try info(), debug(), or any valid log level.')
         if (!this.#allowLevelEntry(args[0])) return false
 
-        var logEntry = new LogEntry()
-        this.#controllers.log(args[0])
+        // build the entry object based on all entry arguments
+        let callback = undefined
+        let dataIndex = 0
+        let entry = { 
+            level: args[0],
+            message: args[1] 
+        }
+        if (arguments.length > 2) {
+            for (let i = 2; i <= arguments.length-1; i++) {
+                switch (typeof arguments[i]) {
+                case 'function' : 
+                    callback = arguments[i]
+                    break
+                case 'object' : 
+                    if (Array.isArray(arguments[i]))
+                        entry.message += ' [ ' + arguments[i] + ' ]'
+                    else {
+                        if (entry.data === undefined) entry.data = {}
+                        entry.data[dataIndex] = arguments[i]
+                        dataIndex++
+                    }
+                    break
+                default :
+                    entry.message += ' ' + arguments[i]
+                }
+            }
+        }
+    
+        // pass the log entry to the controllers for porcessing and run the callback
+        debug('entry %O', entry)
+        var logEntry = new LogEntry(entry)
+        debug('logEntry.json %O', logEntry.json)
+        this.#controllers.log(entry)
+        if (callback) callback(logEntry.json)
 
         /* Raise a Log Event. Created on every log entry. */
-        //this.emit('LogEvent', logEntry)
+        this.emit('LogEvent', logEntry.json)
         return true
     }
 

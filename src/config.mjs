@@ -56,6 +56,7 @@ class Config {
     configure(config) {
         debug('configure')
         this.#json = this.#resolveConfigure(config)
+        //debug('this.json %O', this.#json)
         return true
     }
 

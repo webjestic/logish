@@ -94,7 +94,6 @@ export class Controllers {
                 debug('processing entries')
                 debug('controllers = %O', this.#controllers)
 
-                // execute all resitered controllers.run()
                 for (let controller of this.#controllers) {
                     debug('controller= %O', controller)
                     debug('LOGENTRY:', logEntry)
