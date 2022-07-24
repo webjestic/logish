@@ -97,3 +97,4 @@ Shamelessly *inspired by* the concepts and code from [debug](https://www.npmjs.c
 ### Code of Conduct
 
 Logish ESLint adheres to the [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/main/CODE_OF_CONDUCT.md)
+

@@ -1,9 +1,10 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:class')
+import config from './config.mjs'
 import { EventEmitter } from 'events'
-import { Config } from './config.mjs'
 import { Controllers } from './controllers.mjs'
+import { LogEntry } from './logEntry.mjs'
 
 
 /**
@@ -14,10 +15,11 @@ import { Controllers } from './controllers.mjs'
  */
 export class Logish extends EventEmitter {
 
+    /** @member {string} - namespace used for logging */
     #namespace = undefined
 
     /** @member {Object} - class Config */
-    #config = undefined 
+    #config = undefined
 
     /** @member {Object} - class Controllers */
     #controllers = undefined
@@ -31,12 +33,21 @@ export class Logish extends EventEmitter {
      * @param {object} config 
      * @param {string} namespace 
      */
-    constructor(config, namespace) {
+    constructor(customConfig, namespace) {
         super()
         debug('constructor')
 
-        this.#config = new Config( this.#resolveConstructorArgs(config, namespace) )
-        this.#controllers = new Controllers()    
+        // assign the existing Config class instance 
+        this.#config = config
+
+        // load a conifguration, after validating the constructor arguments
+        this.#config.configure(
+            this.#resolveConstructorArgs(customConfig, namespace)
+        )
+        debug('namespace %o', this.#namespace)
+
+        // create an instance of the Controllers class
+        this.#controllers = new Controllers()
 
         this.#setup()
     }
@@ -44,7 +55,7 @@ export class Logish extends EventEmitter {
     get controllers() { return this.#controllers.controllers }
     get config() { return this.#config.json }
     get namespace() { return this.#namespace }
- 
+
     /**
      * Method validates constructor arguments and resolves accordingly.
      * 
@@ -56,21 +67,20 @@ export class Logish extends EventEmitter {
     #resolveConstructorArgs(config, namespace) {
         debug('resolveConstructorArgs %O', config, namespace)
 
-
         if (typeof config === 'string' && typeof namespace === 'undefined') {
             debug('Preparing for DEFAULT config and a DEFINED namespace.')
             this.#namespace = config
             return undefined
-        } 
-        
+        }
+
         if (typeof config === 'undefined' && typeof namespace === 'undefined') {
             debug('Preparing for DEFAULT config and NO namespace.')
             this.#namespace = undefined
             return undefined
         }
-        
+
         if (typeof config === 'object' && typeof namespace === 'undefined') {
-            if(!Array.isArray(config)) {
+            if (!Array.isArray(config)) {
                 debug('Preparing for CUSTOM config and NO namespace.')
                 this.#namespace = undefined
                 return config
@@ -78,9 +88,9 @@ export class Logish extends EventEmitter {
                 throw new Error('Invalid new Logish() config argument. Cannot be of type Array.')
             }
         }
-            
+
         if (typeof config === 'object' && typeof namespace === 'string') {
-            if(!Array.isArray(config)) {
+            if (!Array.isArray(config)) {
                 debug('Preparing for CUSTOM config and CUSTOM namespace.')
                 this.#namespace = namespace
                 return config
@@ -144,12 +154,12 @@ export class Logish extends EventEmitter {
         debug('log arguments %O', arguments)
 
         // terminte the process if a valid log level is not being used.
-        if (this.#config.json.levels[args[0].toUpperCase()] === undefined) 
+        if (this.#config.json.levels[args[0].toUpperCase()] === undefined)
             throw new Error('Invalid log level method alias used. Try info(), debug(), or any valid log level.')
         if (!this.#allowLevelEntry(args[0])) return false
 
-         
-        this.#controllers.process(args[0])
+        var logEntry = new LogEntry()
+        this.#controllers.log(args[0])
 
         /* Raise a Log Event. Created on every log entry. */
         //this.emit('LogEvent', logEntry)
@@ -168,10 +178,10 @@ export class Logish extends EventEmitter {
 
         debug('Config Levels:', this.#config.json.levels)
         debug('Defined Level:', this.#config.json.level)
-        debug('Defined Level ID:', this.#config.json.levels[this.#config.json.level.toUpperCase()] )
-        debug('Logging Level ID:', this.#config.json.levels[level.toUpperCase()] )
+        debug('Defined Level ID:', this.#config.json.levels[this.#config.json.level.toUpperCase()])
+        debug('Logging Level ID:', this.#config.json.levels[level.toUpperCase()])
 
-        return ( this.#config.json.levels[level.toUpperCase()] <= this.#config.json.levels[this.#config.json.level.toUpperCase()] )
+        return (this.#config.json.levels[level.toUpperCase()] <= this.#config.json.levels[this.#config.json.level.toUpperCase()])
 
     }
 

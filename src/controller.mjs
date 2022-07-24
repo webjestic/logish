@@ -3,17 +3,19 @@ import Debug from 'debug'
 const debug = Debug('logish:controller')
 
 
-
+/**
+ * 
+ */
 export class Controller {
 
-    #config
+    #json
 
     constructor(controllerConfig) {
         debug('constructor')
-        this.#config = controllerConfig
+        this.#json = controllerConfig
     }
 
-    get config() { return this.#config}
+    get json() { return this.#json}
 
     run(logEntry) {
         debug('run', logEntry)

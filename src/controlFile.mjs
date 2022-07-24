@@ -6,7 +6,6 @@ import { Controller } from './controller.mjs'
 
 export class ControlFile extends Controller {
 
-
     constructor(controllerConfig) {
         super(controllerConfig)
         debug('constructor')
