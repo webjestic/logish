@@ -5,11 +5,17 @@ const debug = Debug('logish:controller')
 
 /**
  * 
+ * 
  */
 export class Controller {
 
+    /**  */
     #json
 
+    /**
+     * 
+     * @param {*} controllerConfig 
+     */
     constructor(controllerConfig) {
         debug('constructor')
         this.#json = controllerConfig
@@ -17,8 +23,11 @@ export class Controller {
 
     get json() { return this.#json}
 
+    /**
+     * 
+     * @param {object} logEntry 
+     */
     run(logEntry) {
         debug('run', logEntry)
     }
-
 }

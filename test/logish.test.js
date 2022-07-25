@@ -3,7 +3,7 @@ import { it, expect, describe } from 'vitest'
 import { Logish } from '../src/Logish.mjs'
 
 var logishConfig = {
-    level : 'trace',
+    level : 'info',
     controllers : []
 }
 

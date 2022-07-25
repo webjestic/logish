@@ -19,23 +19,27 @@ class Config {
         level : 'INFO',
         debugging : {
             namespaceOnly : false,
-            performance_time : true
+            performanceTime : true
         },
         controllers : [
             {
                 name: 'ControlConsole',
-                module : './controlConsole.mjs'
+                module : './controlConsole.mjs',
+                active: true
             },
             {
                 name: 'ControlFile',
-                module : './controlFile.mjs'
+                module : './controlFile.mjs',
+                active: true
             }
         ]
     }
 
     /**
-     * No default configuration assigned during object creation.
-     * this.configure() must be called to assign a valid configuration.
+     * No default configuration assigned during object creation. Singeton created
+     * during module initialization of this module.
+     * 
+     * this.configure() must be called after creation to assign a valid configuration.
      */
     constructor() {
         debug('constructor')
@@ -56,12 +60,11 @@ class Config {
     configure(config) {
         debug('configure')
         this.#json = this.#resolveConfigure(config)
-        //debug('this.json %O', this.#json)
         return true
     }
 
     /**
-     * Validates, repairs, prepares or updates a logish configuration for use. 
+     * Validates, repairs, creates or updates a logish configuration for use. 
      * Return a valid conifguration instead of assigning it, allowing for additional 
      * manipulation before actual this.json assignment.
      * 
@@ -71,8 +74,73 @@ class Config {
      */
     #resolveConfigure(config) {
         debug('resolveConstructorArgs')
-        config = this.#defaultConfig
-        return config
+        debug('config arg: %O', config)
+        let custom = this.#defaultConfig
+
+        if (config !== undefined && typeof config === 'object') {
+            debug('assigning custom config')
+            if (typeof config.level === 'string') 
+                 if (this.#defaultConfig.levels[config.level.toUpperCase()] > -1) 
+                    custom.level = config.level
+
+            if (config.debugging !== undefined && typeof config.debugging === 'object') {
+                if (typeof config.debugging.namespaceOnly === 'boolean')
+                    custom.debugging.namespaceOnly = config.debugging.namespaceOnly
+
+                if (typeof config.debugging.performanceTime === 'boolean')
+                    custom.debugging.performanceTime = config.debugging.performanceTime
+            }
+            
+            if (config.controllers !== undefined && typeof config.controllers === 'object') 
+                custom.controllers = config.controllers
+            
+
+        }
+
+        // assign default configuration
+        if (config === undefined || config === {}) {
+            debug ('returning default config %O', this.#defaultConfig) 
+            custom = this.#defaultConfig
+        }
+        
+        return custom
+    }
+
+    /**
+     * Adds a new controller to the configuration.
+     * 
+     * @param {object} controller 
+     * @returns true - indicates we've reached the end of the routine without any exceptions
+     */
+    addController(controller) {
+        debug('addController')
+        debug('controller %O', controller)
+        debug(typeof controller) 
+
+        // Validate minimum requirements of controller config object.
+        if (typeof controller !== 'object')
+            throw new Error('controller is required but typeof is not object.')
+        if (typeof controller.name !== 'string') 
+            throw new Error('controller.name is required but is not typeof string.')
+        if (typeof controller.module !== 'string') 
+            throw new Error('controller.module is required but is not typeof string.')
+        if (typeof controller.active !== 'boolean') 
+            throw new Error('controller.active is required but is not typeof boolean.')
+
+        // Validate the controller being added does not already exist.
+        let exists = false
+        for (let existingController of this.#json.controllers) {
+            if (existingController.module === controller.module) {
+                exists = true
+                break
+            }
+        }
+        if (!exists) {
+            this.#json.controllers.push(controller)
+            debug('controller inserted to config: %O', this.#json.controllers)
+        }
+
+        return true
     }
 }
 

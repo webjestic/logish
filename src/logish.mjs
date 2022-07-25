@@ -200,11 +200,11 @@ export class Logish extends EventEmitter {
     }
 
     /**
-     * Determine if the log level attempt is allowed. 
+     * Determine if the log level attempt is allowed - if it is an actual registered level.
      * 
      * @access Protected
      * @param {string} level 
-     * @returns true or false
+     * @returns true if log entry level is less-than-equal-to the logish config.level.
      */
     #allowLevelEntry(level) {
         debug('allowLevelEntry')
@@ -215,7 +215,6 @@ export class Logish extends EventEmitter {
         debug('Logging Level ID:', this.#config.json.levels[level.toUpperCase()])
 
         return (this.#config.json.levels[level.toUpperCase()] <= this.#config.json.levels[this.#config.json.level.toUpperCase()])
-
     }
 
     /**
@@ -238,7 +237,8 @@ export class Logish extends EventEmitter {
      */
     addController(controller) {
         debug('addController')
-        this.#controllers.addController(controller)
+        if (this.#config.addController(controller))
+            this.#controllers.addController(controller)
     }
 
 }

@@ -33,10 +33,14 @@ export class Controllers {
      */
     addController(controller) {
         debug('addController %O', controller)
+        if (typeof controller !== 'object')
+            throw new Error('controller is required but bd typeof object.')
         if (typeof controller.name !== 'string') 
             throw new Error('controller.name is required but is not typeof string.')
         if (typeof controller.module !== 'string') 
             throw new Error('controller.module is required but is not typeof string.')
+        if (typeof controller.active !== 'boolean') 
+            throw new Error('controller.active is required but is not typeof boolean.')
         this.#loadControllerClass(controller)
     }
 
@@ -97,7 +101,8 @@ export class Controllers {
                 for (let controller of this.#controllers) {
                     debug('controller= %O', controller)
                     debug('LOGENTRY:', logEntry)
-                    controller.run(logEntry)
+                    debug('active %o', controller.json.active)
+                    if( controller.json.active ) controller.run(logEntry)
                 }
             })
             .catch(ex => {

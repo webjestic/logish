@@ -4,7 +4,9 @@ const debug = Debug('logish:logentry')
 import config from './config.mjs'
 import  os  from 'os'
 
-
+/**
+ * 
+ */
 export class LogEntry {
 
     /* logish configuration */
@@ -41,7 +43,12 @@ export class LogEntry {
     get json() { return this.#json }
     set json(value) { this.#updateEntry(value) }
 
+    /**
+     * 
+     * @param {object} value 
+     */
     #updateEntry(value) {
+        debug('updateEntry')
         if (value.level !== undefined && typeof value.level === 'string')
             this.#json.level = value.level
 
