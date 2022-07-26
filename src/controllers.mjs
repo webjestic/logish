@@ -23,6 +23,7 @@ export class Controllers {
     }
 
     get controllers() { return this.#controllers }
+    get config() { return this.#config }
 
     /**
      * Method responsible for validating the requirements of the controller

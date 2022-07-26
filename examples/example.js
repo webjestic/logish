@@ -11,3 +11,4 @@ const conf = {
 
 const log = new Logish(conf, 'app:file')
 log.trace('Trace Log')
+

@@ -44,7 +44,48 @@ export class ControlConsole extends Controller {
         if (this.json.colors === undefined || this.json.colors !== 'object') {
             debug('colors not found') 
             this.json.colors = this.#defaultConsoleConfig.colors
+        } else {
+
+            if (this.json.colors.useColor === undefined || this.json.colors.useColor !== 'boolean') {
+                this.json.colors.useColor = this.#defaultConsoleConfig.colors.useColor
+            }
+
+            if (this.json.colors.displayLevels === undefined || this.json.colors.displayLevels !== 'object') {
+                this.json.colors.displayLevels = this.#defaultConsoleConfig.colors.displayLevels
+            }
+
+            if (this.json.colors.levelColors === undefined || this.json.colors.levelColors !== 'object') {
+                this.json.colors.levelColors = this.#defaultConsoleConfig.colors.levelColors
+            } else {
+
+                if (this.json.colors.levelColors.trace === undefined || this.json.colors.levelColors.trace !== 'string') {
+                    this.json.colors.levelColors.trace = this.#defaultConsoleConfig.colors.levelColors.trace
+                }
+
+                if (this.json.colors.levelColors.debug === undefined || this.json.colors.levelColors.debug !== 'string') {
+                    this.json.colors.levelColors.debug = this.#defaultConsoleConfig.colors.levelColors.debug
+                }
+
+                if (this.json.colors.levelColors.info === undefined || this.json.colors.levelColors.info !== 'string') {
+                    this.json.colors.levelColors.info = this.#defaultConsoleConfig.colors.levelColors.info
+                }
+
+                if (this.json.colors.levelColors.warn === undefined || this.json.colors.levelColors.warn !== 'string') {
+                    this.json.colors.levelColors.warn = this.#defaultConsoleConfig.colors.levelColors.warn
+                }
+
+                if (this.json.colors.levelColors.error === undefined || this.json.colors.levelColors.error !== 'string') {
+                    this.json.colors.levelColors.error = this.#defaultConsoleConfig.colors.levelColors.error
+                }
+
+                if (this.json.colors.levelColors.fatal === undefined || this.json.colors.levelColors.fatal !== 'string') {
+                    this.json.colors.levelColors.fatal = this.#defaultConsoleConfig.colors.levelColors.fatal
+                }
+            }
+
         }
+
+
 
         debug('controller json %O', this.json)
     }

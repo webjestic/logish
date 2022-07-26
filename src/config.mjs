@@ -17,6 +17,7 @@ class Config {
     #defaultConfig = {
         levels : Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 }),
         level : 'INFO',
+        //TODO: Move debugging into controllers
         debugging : {
             namespaceOnly : false,
             performanceTime : true
@@ -89,7 +90,7 @@ class Config {
 
                 if (typeof config.debugging.performanceTime === 'boolean')
                     custom.debugging.performanceTime = config.debugging.performanceTime
-            }
+                }
             
             if (config.controllers !== undefined && typeof config.controllers === 'object') 
                 custom.controllers = config.controllers
