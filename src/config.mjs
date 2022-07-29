@@ -6,7 +6,7 @@ const debug = Debug('logish:config')
  * Responsible for ensuring the integrity of the logish configuration.
  * Creating, updating, validating and reconciliation.
  */
-class Config {
+export class Config {
 
     /* the actual configuration key:value pairs */
     #json = undefined
@@ -43,6 +43,8 @@ class Config {
      */
     constructor() {
         debug('constructor')
+        if (!Config.instance) Config.instance = this
+        return Config.instance 
     }
 
     get json() { return this.#json }
@@ -141,11 +143,3 @@ class Config {
         return true
     }
 }
-
-debug('config.mjs')
-var config = new Config
-
-/**
- * Export an instance if the config Class.
- */
-export default config

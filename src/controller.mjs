@@ -1,7 +1,7 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:controller')
-import config from './config.mjs'
+import { Config } from './config.mjs'
 
 
 /**
@@ -23,7 +23,7 @@ export class Controller {
     constructor(controllerConfig) {
         debug('constructor')
         this.#json = controllerConfig
-        this.#config = config
+        this.#config = new Config()
     }
 
     get json() { return this.#json}

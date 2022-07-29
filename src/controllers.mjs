@@ -1,7 +1,7 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:controllers')
-import config from './config.mjs'
+import { Config } from './config.mjs'
 
 
 export class Controllers {
@@ -19,7 +19,7 @@ export class Controllers {
         debug('constructor')
 
         // assign the logish conifguration to the local class.
-        this.#config = config
+        this.#config = new Config()
     }
 
     get controllers() { return this.#controllers }

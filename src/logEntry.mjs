@@ -1,7 +1,7 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:logentry')
-import config from './config.mjs'
+import { Config } from './config.mjs'
 import  os  from 'os'
 
 /**
@@ -30,7 +30,7 @@ export class LogEntry {
 
     constructor(entry) {
         debug('constructor')
-        this.#config = config
+        this.#config = new Config()
 
         const dtime = Date.now()
         this.#json.datetime.timestamp = dtime

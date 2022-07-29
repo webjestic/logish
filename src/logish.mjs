@@ -1,7 +1,7 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:class')
-import config from './config.mjs'
+import { Config } from './config.mjs'
 import { EventEmitter } from 'events'
 import { Controllers } from './controllers.mjs'
 import { LogEntry } from './logEntry.mjs'
@@ -38,7 +38,7 @@ export class Logish extends EventEmitter {
         debug('constructor')
 
         // assign the existing Config class instance 
-        this.#config = config
+        this.#config = new Config()
 
         // load a conifguration, after validating the constructor arguments
         this.#config.configure(
