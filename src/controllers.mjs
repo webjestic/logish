@@ -36,8 +36,8 @@ export class Controllers {
         debug('addController %O', controller)
         if (typeof controller !== 'object')
             throw new Error('controller is required but bd typeof object.')
-        if (typeof controller.name !== 'string') 
-            throw new Error('controller.name is required but is not typeof string.')
+        if (typeof controller.classname !== 'string') 
+            throw new Error('controller.classname is required but is not typeof string.')
         if (typeof controller.module !== 'string') 
             throw new Error('controller.module is required but is not typeof string.')
         if (typeof controller.active !== 'boolean') 
@@ -59,11 +59,11 @@ export class Controllers {
         // attempt to load a Node module.mjs via a promise
         const mod = import(controller.module)
             .then((ControllerClass) => {
-                debug('Controller added: %O', controller.name)
+                debug('Controller added: %O', controller.classname)
 
                 // dynamically create an instance of the Controller Class.
-                const NewObject = new ControllerClass[controller.name](controller)
-                debug('ControllerClass %O', typeof ControllerClass[controller.name])
+                const NewObject = new ControllerClass[controller.classname](controller)
+                debug('ControllerClass %O', typeof ControllerClass[controller.classname])
                 debug('NewObject %O', NewObject)
 
                 // add the instance to the array of controllers

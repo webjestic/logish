@@ -17,19 +17,18 @@ class Config {
     #defaultConfig = {
         levels : Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 }),
         level : 'INFO',
-        //TODO: Move debugging into controllers
-        debugging : {
+        debug : {
             namespaceOnly : false,
             performanceTime : true
         },
         controllers : [
             {
-                name: 'ControlConsole',
+                classname: 'ControlConsole',
                 module : './controlConsole.mjs',
                 active: true
             },
             {
-                name: 'ControlFile',
+                classname: 'ControlFile',
                 module : './controlFile.mjs',
                 active: true
             }
@@ -84,18 +83,16 @@ class Config {
                  if (this.#defaultConfig.levels[config.level.toUpperCase()] > -1) 
                     custom.level = config.level
 
-            if (config.debugging !== undefined && typeof config.debugging === 'object') {
-                if (typeof config.debugging.namespaceOnly === 'boolean')
-                    custom.debugging.namespaceOnly = config.debugging.namespaceOnly
+            if (config.debug !== undefined && typeof config.debug === 'object') {
+                if (typeof config.debug.namespaceOnly === 'boolean')
+                    custom.debug.namespaceOnly = config.debug.namespaceOnly
 
-                if (typeof config.debugging.performanceTime === 'boolean')
-                    custom.debugging.performanceTime = config.debugging.performanceTime
+                if (typeof config.debug.performanceTime === 'boolean')
+                    custom.debug.performanceTime = config.debug.performanceTime
                 }
             
             if (config.controllers !== undefined && typeof config.controllers === 'object') 
                 custom.controllers = config.controllers
-            
-
         }
 
         // assign default configuration
@@ -121,8 +118,8 @@ class Config {
         // Validate minimum requirements of controller config object.
         if (typeof controller !== 'object')
             throw new Error('controller is required but typeof is not object.')
-        if (typeof controller.name !== 'string') 
-            throw new Error('controller.name is required but is not typeof string.')
+        if (typeof controller.classname !== 'string') 
+            throw new Error('controller.classname is required but is not typeof string.')
         if (typeof controller.module !== 'string') 
             throw new Error('controller.module is required but is not typeof string.')
         if (typeof controller.active !== 'boolean') 
