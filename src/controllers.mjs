@@ -1,7 +1,6 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:controllers')
-import { Config } from './config.mjs'
 
 
 export class Controllers {
@@ -12,18 +11,13 @@ export class Controllers {
     /* array of pending promises */
     #promises = []
 
-    /* logish configuration */
-    #config = undefined
 
     constructor() {
         debug('constructor')
 
-        // assign the logish conifguration to the local class.
-        this.#config = new Config()
     }
 
     get controllers() { return this.#controllers }
-    get config() { return this.#config }
 
     /**
      * Method responsible for validating the requirements of the controller
