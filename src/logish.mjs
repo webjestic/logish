@@ -68,18 +68,21 @@ export class Logish extends EventEmitter {
     #resolveConstructorArgs(config, namespace) {
         debug('resolveConstructorArgs %O', config, namespace)
 
+        // probably is: new Logish('MyNamespace')
         if (typeof config === 'string' && typeof namespace === 'undefined') {
             debug('Preparing for DEFAULT config and a DEFINED namespace.')
             this.#namespace = config
             return undefined
         }
 
+        // probably is: new Logish()
         if (typeof config === 'undefined' && typeof namespace === 'undefined') {
             debug('Preparing for DEFAULT config and NO namespace.')
             this.#namespace = undefined
             return undefined
         }
 
+        // probably is: new Logish(configJSON)
         if (typeof config === 'object' && typeof namespace === 'undefined') {
             if (!Array.isArray(config)) {
                 debug('Preparing for CUSTOM config and NO namespace.')
@@ -90,6 +93,7 @@ export class Logish extends EventEmitter {
             }
         }
 
+        // probably is: new Logish(configJSON, 'MyNamespace')
         if (typeof config === 'object' && typeof namespace === 'string') {
             if (!Array.isArray(config)) {
                 debug('Preparing for CUSTOM config and CUSTOM namespace.')
@@ -159,7 +163,7 @@ export class Logish extends EventEmitter {
             throw new Error('Invalid log level method alias used. Try info(), debug(), or any valid log level.')
         if (!this.#allowLevelEntry(args[0])) return false
 
-        // build the entry object based on all entry arguments
+        // build the logEntry object based on all entry arguments
         let callback = undefined
         let dataIndex = 0
         let entry = { 

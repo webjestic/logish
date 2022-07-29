@@ -1,6 +1,8 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:config')
+import Ajv from 'ajv'
+
 
 /**
  * Responsible for ensuring the integrity of the logish configuration.
@@ -8,32 +10,59 @@ const debug = Debug('logish:config')
  */
 export class Config {
 
-    /* the actual configuration key:value pairs */
+    /** the actual configuration */
     #json = undefined
 
-    /**
-     * The default Logish configuration.
-     */
-    #defaultConfig = {
+    /** minimum schema for a controller */
+    controlSchema = {
+        type: 'object',
+        properties: {
+            classname: { type: 'string' },
+            module : { type: 'string' },
+            active: { type: 'boolean', default: 'true' },
+        },
+        required: ['classname', 'module'],
+        additionalProperties: true
+    }
+    
+    /**  */
+    controllersSchema = {
+        type: 'array',
+        items: this.controlSchema      
+    }
+    
+    /** */
+    configSchema = {
+        type: 'object',
+        properties: {
+            levels: {type: 'object'},
+            level: {type: 'string', default: 'INFO'},
+            performanceTime: { type: 'boolean', default: 'true' },
+            controllers: this.controllersSchema 
+        },
+        required: ['controllers'],
+        additionalProperties: true
+    }
+
+    /** The default Logish configuration. */
+    #configDefault = {
         levels : Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 }),
         level : 'INFO',
-        debug : {
-            namespaceOnly : false,
-            performanceTime : true
-        },
+        performanceTime : true,
         controllers : [
             {
                 classname: 'ControlConsole',
                 module : './controlConsole.mjs',
-                active: true
+                active: true,
             },
             {
                 classname: 'ControlFile',
                 module : './controlFile.mjs',
-                active: true
+                active: false
             }
         ]
     }
+
 
     /**
      * No default configuration assigned during object creation. Singeton created
@@ -43,12 +72,14 @@ export class Config {
      */
     constructor() {
         debug('constructor')
+
+        /** Singleton - return the instance if already created */
         if (!Config.instance) Config.instance = this
         return Config.instance 
     }
 
     get json() { return this.#json }
-    set json(value) { this.#json = this.#resolveConfigure(value) }
+    set json(value) { this.#validate(value) }
 
 
     /**
@@ -61,7 +92,7 @@ export class Config {
      */
     configure(config) {
         debug('configure')
-        this.#json = this.#resolveConfigure(config)
+        this.#validate(config)
         return true
     }
 
@@ -74,36 +105,36 @@ export class Config {
      * @param {object} config 
      * @returns config
      */
-    #resolveConfigure(config) {
-        debug('resolveConstructorArgs')
+    #validate(config) {
+        debug('validate')
         debug('config arg: %O', config)
-        let custom = this.#defaultConfig
 
-        if (config !== undefined && typeof config === 'object') {
-            debug('assigning custom config')
-            if (typeof config.level === 'string') 
-                 if (this.#defaultConfig.levels[config.level.toUpperCase()] > -1) 
-                    custom.level = config.level
-
-            if (config.debug !== undefined && typeof config.debug === 'object') {
-                if (typeof config.debug.namespaceOnly === 'boolean')
-                    custom.debug.namespaceOnly = config.debug.namespaceOnly
-
-                if (typeof config.debug.performanceTime === 'boolean')
-                    custom.debug.performanceTime = config.debug.performanceTime
-                }
-            
-            if (config.controllers !== undefined && typeof config.controllers === 'object') 
-                custom.controllers = config.controllers
-        }
-
-        // assign default configuration
+        // apply default configuration if necessary
         if (config === undefined || config === {}) {
-            debug ('returning default config %O', this.#defaultConfig) 
-            custom = this.#defaultConfig
+            debug ('applying default config %O', this.#configDefault) 
+            config = this.#configDefault
+
+        // override and force default levels options
+        } else {
+            config.levels = this.$configDefault.levels
         }
-        
-        return custom
+
+        // validate config
+        try {
+            let schemaValidator = new Ajv()
+            let testSchemaValidator = schemaValidator.compile(this.configSchema)
+            let valid = testSchemaValidator(config)
+            if (!valid) { 
+                debug('validation errors %O', testSchemaValidator.errors)
+                this.#json = undefined
+            } else {
+                this.#json = config
+            }
+        } catch (ex) {
+            debug('config isValid %O', ex)
+            this.#json = undefined
+            throw new Error('Error validating config.')
+        }
     }
 
     /**
