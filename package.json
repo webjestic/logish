@@ -29,5 +29,8 @@
     "debug": "^4.3.4",
     "eslint": "^8.20.0",
     "vitest": "^0.18.1"
+  },
+  "dependencies": {
+    "avj": "^0.0.0"
   }
 }

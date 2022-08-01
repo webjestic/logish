@@ -1,0 +1,75 @@
+
+import Logish from '../src/index.js'
+
+import { exampleA } from './exampleA.mjs'
+import { exampleB } from './exampleB.mjs'
+
+
+const logishConfig = {
+    level : 'trace',
+    performanceTime : true,
+    controllers : [
+        {
+            name: 'console',
+            classname: 'ControlConsole',
+            module : './controlConsole.mjs',
+            active: true,
+            displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
+            format : '[%date] [%level] %entry %perf',
+            useColor: true,
+            colors : {
+                trace   : '\x1b[32m',    debug   : '\x1b[36m',
+                info    : '\x1b[37m',    warn    : '\x1b[33m',
+                error   : '\x1b[35m',    fatal   : '\x1b[31m'
+            }
+        },
+        {
+            name: 'file',
+            classname: 'ControlFile',
+            module : './controlFile.mjs',
+            active: true,
+            files: [
+                {
+                    title: 'application',
+                    active : true,
+                    writeLevels: ['info', 'warn'],
+                    format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
+                    filename: 'logs/app.log',   
+                    maxsize_in_mb: 2,
+                    backups_kept: 2, 
+                    gzip_backups : false
+                },
+                {
+                    title: 'errors',
+                    active : true,
+                    writeLevels: ['error', 'fatal'],
+                    format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
+                    filename: 'logs/errors.log',   
+                    maxsize_in_mb: 2,
+                    backups_kept: 2, 
+                    gzip_backups : false
+                },
+                {
+                    title: 'development',
+                    active : true,
+                    writeLevels: ['trace', 'debug'],
+                    format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
+                    filename: 'logs/dev.log',   
+                    maxsize_in_mb: 2,
+                    backups_kept: 2, 
+                    gzip_backups : false
+                }
+            ]
+        }
+    ]
+}
+
+const log = new Logish(logishConfig)
+log.info('Getting started.')
+exampleA()
+exampleB()
+
+log.debug('entry 1')
+log.debug('entry 2')
+log.debug('entry 3')
+
