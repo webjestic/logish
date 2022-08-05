@@ -134,6 +134,7 @@ export class ControlHandler {
                 }
             })
             .catch(ex => {
+                debug(ex)
                 throw new Error(ex)
             })
         debug('process promises:', this.#promises)

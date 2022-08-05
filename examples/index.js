@@ -15,12 +15,13 @@ const logishConfig = {
             module : './controlConsole.mjs',
             active: true,
             displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
-            format : '[%date] [%level] %entry %perf',
+            format : '%datetime %level %namespace %entry %perf',
             useColor: true,
             colors : {
                 trace   : '\x1b[32m',    debug   : '\x1b[36m',
                 info    : '\x1b[37m',    warn    : '\x1b[33m',
-                error   : '\x1b[35m',    fatal   : '\x1b[31m'
+                error   : '\x1b[35m',    fatal   : '\x1b[31m',
+                reset   : '\x1b[0m'
             }
         },
         {
@@ -65,6 +66,9 @@ const logishConfig = {
 }
 
 const log = new Logish(logishConfig)
+log.setNamespace('example:index')
+log.trace('Tracing call')
+
 log.info('Getting started.')
 exampleA()
 exampleB()

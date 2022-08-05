@@ -17,6 +17,8 @@ export class ControlFile extends Controller {
     entry(logEntry) {
         super.entry()
         debug('entry')
+
+        
     }
     
 }

@@ -11,10 +11,10 @@ export class LogEntry {
     /* the log entry */
     #json = {
         level: undefined,
-        namespace: undefined,
         envVars: undefined,
         hostname: undefined,
         message: undefined,
+        namespace: undefined,
         datetime : {
             timestamp: undefined,
             dateString: undefined
@@ -29,41 +29,43 @@ export class LogEntry {
 
         const dtime = Date.now()
         this.#json.datetime.timestamp = dtime
-        this.#json.datetime.dateString = new Date(dtime).toISOString()
+        this.#json.datetime.dateString = new Date(dtime).toISOString().replace('T',' ').split('.')[0]
         this.#json.hostname = os.hostname()
         this.#updateEntry(entry)
 
     }
+
 
     get json() { return this.#json }
     set json(value) { this.#updateEntry(value) }
 
     /**
      * 
-     * @param {object} value 
+     * @param {object} entry 
      */
-    #updateEntry(value) {
+    #updateEntry(entry) {
         debug('updateEntry')
-        if (value.level !== undefined && typeof value.level === 'string')
-            this.#json.level = value.level
+        //debug('entry %O', entry)
+        if (entry.level !== undefined && typeof entry.level === 'string')
+            this.#json.level = entry.level
 
-        if (value.namespace !== undefined && typeof value.namespace === 'string')
-            this.#json.namespace = value.namespace
+        if (entry.namespace !== undefined && typeof entry.namespace === 'string')
+            this.#json.namespace = entry.namespace
 
-        if (value.message !== undefined && typeof value.message === 'string')
-            this.#json.message = value.message
+        if (entry.message !== undefined && typeof entry.message === 'string')
+            this.#json.message = entry.message
 
-        if (value.performance !== undefined && typeof value.performance === 'string')
-            this.#json.performance = value.performance
+        if (entry.performance !== undefined && typeof entry.performance === 'string')
+            this.#json.performance = entry.performance
 
-        if (value.envVars !== undefined && typeof value.envVars === 'object')
-            this.#json.envVars = value.envVars
+        if (entry.envVars !== undefined && typeof entry.envVars === 'object')
+            this.#json.envVars = entry.envVars
 
-        if (value.entries !== undefined && Array.isArray(value.entries))
-            this.#json.entries = value.entries
+        if (entry.entries !== undefined && Array.isArray(entry.entries))
+            this.#json.entries = entry.entries
 
-        if (value.data !== undefined && value.data === 'object')
-            this.#json.data = value.data
+        if (entry.data !== undefined && entry.data === 'object')
+            this.#json.data = entry.data
     }
 
 }

@@ -10,17 +10,17 @@ import { performance } from 'perf_hooks' // https://nodejs.org/api/perf_hooks.ht
 
 export class Logish extends EventEmitter {
 
-    #namespace = undefined
     #config = undefined
     #env = undefined
     #controlHandler = undefined
+    #namespace = undefined
 
     /** Pattern:  */
-    constructor(configJSON, namespace) {
+    constructor(configJSON) {
         super()
         debug('constructor')
         
-        this.#config = new Config( this.#resolveConstructorArgs(configJSON, namespace) )
+        this.#config = new Config( configJSON) 
         
         this.#setup()
     }
@@ -32,56 +32,8 @@ export class Logish extends EventEmitter {
     getConfig() { return this.#config.getConfig() }
     getLevels() { return this.#config.getLevels() }
 
-    /**
-     * Method validates constructor arguments and resolves accordingly.
-     * 
-     * @access Protected
-     * @param {object} config - Custom configuration json object for Logish.
-     * @param {string} namespace - Used to filter debug and trace log entries for verbose.
-     * @returns {object} - Returns a acceptable config object for the Config instance.
-     */
-    #resolveConstructorArgs(config, namespace) {
-        debug('resolveConstructorArgs')
-
-        // probably is: new Logish('MyNamespace')
-        if (typeof config === 'string' && typeof namespace === 'undefined') {
-            debug('Preparing for DEFAULT config and a DEFINED namespace.')
-            this.#namespace = config
-            return undefined
-        }
-
-        // probably is: new Logish()
-        if (typeof config === 'undefined' && typeof namespace === 'undefined') {
-            debug('Preparing for DEFAULT config and NO namespace.')
-            this.#namespace = undefined
-            return undefined
-        }
-
-        // probably is: new Logish(configJSON)
-        if (typeof config === 'object' && typeof namespace === 'undefined') {
-            if (!Array.isArray(config)) {
-                debug('Preparing for CUSTOM config and NO namespace.')
-                this.#namespace = undefined
-                return config
-            } else {
-                throw new Error('Invalid new Logish() config argument. Cannot be of type Array.')
-            }
-        }
-
-        // probably is: new Logish(configJSON, 'MyNamespace')
-        if (typeof config === 'object' && typeof namespace === 'string') {
-            if (!Array.isArray(config)) {
-                debug('Preparing for CUSTOM config and CUSTOM namespace.')
-                this.#namespace = namespace
-                return config
-            } else {
-                throw new Error('Invalid new Logish() config argument. Cannot be of type Array.')
-            }
-        } else {
-            throw new Error('Invalid new Logish() constructor arguments.')
-        }
-    }
-
+    getNamespace() { return this.#namespace }
+    setNamespace(value) { this.#namespace = value }
 
     /**
      * 
@@ -89,7 +41,6 @@ export class Logish extends EventEmitter {
     #setup() {
         debug('setup')
         this.#setupControls()
-        this.#setupEnv()
         this.#setupLevelMethods()
     }
 
@@ -99,22 +50,6 @@ export class Logish extends EventEmitter {
     #setupControls() {
         debug('setupControls')
         this.#controlHandler = new ControlHandler(this.#config.json.controllers)
-    }
-
-    /**
-     * Method reads values for LOGISH environment variables.
-     * 
-     * @access Protected
-     */
-    #setupEnv() {
-        debug('setupEnv')
-        Object.keys(process.env).forEach(key => {
-            if (key.toUpperCase().includes('LOGISH')) {
-                if (this.#env === undefined) this.#env = {}
-                this.#env[key] = process.env[key]
-            }
-        })
-        debug('env: %O', this.#env)
     }
 
     /**
@@ -152,7 +87,6 @@ export class Logish extends EventEmitter {
         let dataIndex = 0
         let entry = { 
             level: args[0],
-            namespace : this.#namespace,
             message: args[1] 
 
         }
@@ -179,13 +113,14 @@ export class Logish extends EventEmitter {
 
         entry.envVars = this.#env
         entry.performance = this.#trackPerformance(entry)
+        entry.namespace = this.#namespace
 
         // pass the log entry to the controllers for porcessing and run the callback
         //debug('entry %O', entry)
         
         var logEntry = new LogEntry(entry)
         //debug('logEntry.json %O', logEntry.json)
-        this.#controlHandler.entry(entry)
+        this.#controlHandler.entry(logEntry.json)
         
         if (callback) callback(logEntry.json)
 
@@ -262,5 +197,4 @@ export class Logish extends EventEmitter {
         debug('performance %o', result)
         return result
     }
-
 }
