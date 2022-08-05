@@ -2,7 +2,13 @@
     "env": {
         "es2021": true,
         "node": true
+<<<<<<< HEAD
     },
+=======
+        //"jest/globals": true
+    },
+    //"extends": ["eslint:recommended", "plugin:jest/recommended"],
+>>>>>>> 49bff89a5c613d1d48f6194a21fd21b63e9a9b4c
     "extends": ["eslint:recommended"],
     "parserOptions": {
         "ecmaVersion": "latest",
