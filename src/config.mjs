@@ -3,20 +3,19 @@ import Debug from 'debug'
 const debug = Debug('logish:config')
 import Ajv from 'ajv'
 
-
 /**
  * Responsible for ensuring the integrity of the logish configuration.
  * Creating, updating, validating and reconciliation.
  */
 export class Config {
 
-    /** the actual configuration */
-    #json = undefined
+    #levelsdef = Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 })
+    #json = null
 
-    /** minimum schema for a controller */
     controlSchema = {
         type: 'object',
         properties: {
+            name : { type: 'string' },
             classname: { type: 'string' },
             module : { type: 'string' },
             active: { type: 'boolean', default: 'true' },
@@ -24,14 +23,12 @@ export class Config {
         required: ['classname', 'module'],
         additionalProperties: true
     }
-    
-    /**  */
+
     controllersSchema = {
         type: 'array',
         items: this.controlSchema      
     }
-    
-    /** */
+
     configSchema = {
         type: 'object',
         properties: {
@@ -43,134 +40,79 @@ export class Config {
         required: ['controllers'],
         additionalProperties: true
     }
-
-    /** The default Logish configuration. */
-    #configDefault = {
-        levels : Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 }),
-        level : 'INFO',
-        performanceTime : true,
-        controllers : [
-            {
-                classname: 'ControlConsole',
-                module : './controlConsole.mjs',
-                active: true,
-            },
-            {
-                classname: 'ControlFile',
-                module : './controlFile.mjs',
-                active: false
-            }
-        ]
-    }
-
-
-    /**
-     * No default configuration assigned during object creation. Singeton created
-     * during module initialization of this module.
-     * 
-     * this.configure() must be called after creation to assign a valid configuration.
-     */
-    constructor() {
+    
+    /** Pattern: Singleton */
+    constructor(configJSON) {
         debug('constructor')
 
-        /** Singleton - return the instance if already created */
-        if (!Config.instance) Config.instance = this
-        return Config.instance 
+        if (!Config.instance) {
+            if (!this.configure(configJSON))
+                throw new Error('Unable to create instance - no validated configuration provided.')
+            else
+                Config.instance = this
+        }
+        return Config.instance
     }
-
+    
+    getInstance() { return Config.instance }
+    getConfig() { return this.#json }
+    getLevels() { return this.#levelsdef }
     get json() { return this.#json }
-    set json(value) { this.#validate(value) }
-
 
     /**
-     * Ideally called to initialize a logish configuration. This method is
-     * responsible for 
      * 
-     * @access Public
-     * @param {object} config 
-     * @returns returns true if a successful configuration was applied.
+     * @param {object} configJSON 
+     * @returns boolean
      */
-    configure(config) {
+    configure(configJSON) {
         debug('configure')
-        this.#validate(config)
-        return true
-    }
+        //debug('configJSON %O', configJSON)
 
-    /**
-     * Validates, repairs, creates or updates a logish configuration for use. 
-     * Return a valid conifguration instead of assigning it, allowing for additional 
-     * manipulation before actual this.json assignment.
-     * 
-     * @access Protected
-     * @param {object} config 
-     * @returns config
-     */
-    #validate(config) {
-        debug('validate')
-        debug('config arg: %O', config)
-
-        // apply default configuration if necessary
-        if (config === undefined || config === {}) {
-            debug ('applying default config %O', this.#configDefault) 
-            config = this.#configDefault
-
-        // override and force default levels options
+        let newConfig = {}
+        if (configJSON !== undefined && typeof configJSON === 'object') {
+            newConfig = configJSON
+            newConfig.levels = this.#levelsdef
         } else {
-            config.levels = this.$configDefault.levels
+            throw new Error('No valid configuration provided.')
         }
 
-        // validate config
-        try {
-            let schemaValidator = new Ajv()
-            let testSchemaValidator = schemaValidator.compile(this.configSchema)
-            let valid = testSchemaValidator(config)
-            if (!valid) { 
-                debug('validation errors %O', testSchemaValidator.errors)
-                this.#json = undefined
-            } else {
-                this.#json = config
-            }
-        } catch (ex) {
-            debug('config isValid %O', ex)
-            this.#json = undefined
-            throw new Error('Error validating config.')
+        this.#json = this.validate(newConfig)
+        if (this.#json === undefined) {
+            debug('configuration failed')
+            return false
+        } else {
+            debug('configuration success')
+            return true
         }
     }
 
     /**
-     * Adds a new controller to the configuration.
      * 
-     * @param {object} controller 
-     * @returns true - indicates we've reached the end of the routine without any exceptions
+     * @param {object} configJSON 
+     * @returns valid config json or undefined
      */
-    addController(controller) {
-        debug('addController')
-        debug('controller %O', controller)
-        debug(typeof controller) 
+    validate(configJSON) {
+        debug('validate')
 
-        // Validate minimum requirements of controller config object.
-        if (typeof controller !== 'object')
-            throw new Error('controller is required but typeof is not object.')
-        if (typeof controller.classname !== 'string') 
-            throw new Error('controller.classname is required but is not typeof string.')
-        if (typeof controller.module !== 'string') 
-            throw new Error('controller.module is required but is not typeof string.')
-        if (typeof controller.active !== 'boolean') 
-            throw new Error('controller.active is required but is not typeof boolean.')
+        let schemaValidator = new Ajv()
+        let testSchemaValidator = schemaValidator.compile(this.configSchema)
+        let valid = testSchemaValidator(configJSON)
+        if (!valid) { 
+            debug('validation errors %O', testSchemaValidator.errors)
+            console.error('validation errors %O', testSchemaValidator.errors)
+            throw new Error('Logish.validate() has failed. See previous validation errors in console.error entry.')
+        } 
+            
+        debug('validation success')
 
-        // Validate the controller being added does not already exist.
-        let exists = false
-        for (let existingController of this.#json.controllers) {
-            if (existingController.module === controller.module) {
-                exists = true
-                break
-            }
-        }
-        if (!exists) {
-            this.#json.controllers.push(controller)
-            debug('controller inserted to config: %O', this.#json.controllers)
+        //const validLevel = this.#levelsdef[configJSON.level.toUpperCase()]
+        //debug('validLevel %o', validLevel)
+
+        if (this.#levelsdef[configJSON.level.toUpperCase()] === undefined) {
+            throw new Error ('config.level must be "trace", "debug", "info", "warn", "error", or "fatal". A valid log level.')
         }
 
-        return true
+        return configJSON
+
     }
 }
