@@ -197,4 +197,8 @@ export class Logish extends EventEmitter {
         debug('performance %o', result)
         return result
     }
+
+    showStats() {
+        this.#controlHandler.showStats()
+    }
 }

@@ -15,7 +15,7 @@ export class ControlFile extends Controller {
      * @param {object} logEntry 
      */
     entry(logEntry) {
-        super.entry()
+        super.entry(logEntry)
         debug('entry')
 
         

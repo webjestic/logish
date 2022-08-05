@@ -15,7 +15,7 @@ const logishConfig = {
             module : './controlConsole.mjs',
             active: true,
             displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
-            format : '%datetime %level %namespace %entry %perf',
+            format : '%datetime %level %namespace %entry %performance',
             useColor: true,
             colors : {
                 trace   : '\x1b[32m',    debug   : '\x1b[36m',
@@ -34,7 +34,7 @@ const logishConfig = {
                     title: 'application',
                     active : true,
                     writeLevels: ['info', 'warn'],
-                    format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
+                    format : '[%date] [%level] %namespace %host %protocol %ip - %entry %performance',
                     filename: 'logs/app.log',   
                     maxsize_in_mb: 2,
                     backups_kept: 2, 
@@ -76,4 +76,6 @@ exampleB()
 log.debug('entry 1')
 log.debug('entry 2')
 log.debug('entry 3')
+
+log.showStats()
 

@@ -1,4 +1,5 @@
 import Debug from 'debug'
+import util from 'util'
 const debug = Debug('logish:console')
 import { Controller } from './controller.mjs'
 import Ajv from 'ajv'
@@ -69,11 +70,14 @@ export class ControlConsole extends Controller {
      * @param {object} logEntry 
      */
     entry(logEntry) {
-        super.entry()
         debug('entry')
-        this.formatEntry(logEntry)
-        this.writeToConsole(logEntry)
-        
+
+        // if log level is intended to be dispalyed to console
+        if (this.json.displayLevels.indexOf(logEntry.level) > -1) {
+            super.entry(logEntry)
+            this.formatEntry(logEntry)
+            this.writeToConsole(logEntry)
+        }
     }
 
     /**
@@ -89,10 +93,14 @@ export class ControlConsole extends Controller {
             let entry = this.formatEntry(logEntry)
             debug('entry %O', entry)
 
-            if (logEntry.data) 
-                console.log(`${entry} %O`, logEntry.data)
-            else 
+            if (logEntry.data) {
+                // require('util').inspect.defaultOptions.depth = 10
+                // util.inspect(object, showHidden=false, depth=2, colorize=true)
+                // https://nodejs.org/en/knowledge/getting-started/how-to-use-util-inspect/
+                console.log(`${entry} %O`, util.inspect(logEntry.data, false, 10, this.json.useColor))
+            } else { 
                 console.log(entry )
+            }
 
             logEntry.entries.push( { 'console': entry } )
         } else {
@@ -117,7 +125,7 @@ export class ControlConsole extends Controller {
             const underscore = '\x1b[4m'
 
             if (logEntry.level !== undefined) formatStr = formatStr.replace('%level', `${levelColor}%level${resetColor}`)
-            if (logEntry.performance !== undefined) formatStr = formatStr.replace('%perf', `${levelColor}%perf${resetColor}`)
+            if (logEntry.performance !== undefined) formatStr = formatStr.replace('%performance', `${levelColor}%performance${resetColor}`)
             if (logEntry.namespace !== undefined) formatStr = formatStr.replace('%namespace', `${underscore}%namespace${resetColor}`)
             if (logEntry.datetime.dateString !== undefined) formatStr = formatStr.replace('%datetime', `${dimColor}%datetime${resetColor}`)
         }

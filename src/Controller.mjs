@@ -3,6 +3,7 @@ import Debug from 'debug'
 const debug = Debug('logish:controller')
 
 
+
 /**
  * 
  * 
@@ -12,7 +13,13 @@ export class Controller {
     /** Coniguration specific only to the controller */
     #json
     #stats = {
-        entries : 0
+        total : 0,
+        trace: 0,
+        debug: 0,
+        info: 0,
+        warn: 0,
+        error: 0,
+        fatal: 0
     }
 
     /**
@@ -31,9 +38,30 @@ export class Controller {
      * 
      * @param {object} logEntry 
      */
-    entry() {
+    entry(logEntry) {
         debug('entry')
-        this.#stats.entries = this.#stats.entries + 1
+        this.#stats.total = this.#stats.total + 1
+        switch (logEntry.level.toLowerCase()) {
+        case 'trace': 
+            this.#stats.trace = this.#stats.trace + 1
+            break
+        case 'debug' :
+            this.#stats.debug = this.#stats.debug + 1
+            break
+        case 'info' :
+            this.#stats.info = this.#stats.info + 1
+            break
+        case 'warn' :
+            this.#stats.warn = this.#stats.warn + 1
+            break
+        case 'error' : 
+            this.#stats.error = this.#stats.error + 1
+            break
+        case 'fatal' :
+            this.#stats.fatal = this.#stats.fatal + 1
+            break
+        default : break
+        }
     }
 
     /**
@@ -60,8 +88,8 @@ export class Controller {
         if (logEntry.message !== undefined) formatStr = formatStr.replace('%entry', logEntry.message)
         else formatStr = formatStr.replace('%entry', '')
         
-        if (logEntry.performance !== undefined) formatStr = formatStr.replace('%perf', logEntry.performance)
-        else formatStr = formatStr.replace('%perf', '')
+        if (logEntry.performance !== undefined) formatStr = formatStr.replace('%performance', logEntry.performance)
+        else formatStr = formatStr.replace('%performance', '')
         
         if (logEntry.protocol !== undefined) formatStr = formatStr.replace('%protocol', logEntry.protocol)
         else formatStr = formatStr.replace('%protocol', '')
@@ -70,5 +98,9 @@ export class Controller {
         else formatStr = formatStr.replace('%ip', '')
         
         return (formatStr)// + os.EOL)
+    }
+
+    showStats() {
+        console.log(`logish ${this.#json.name} %o`, this.#stats)
     }
 }

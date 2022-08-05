@@ -141,4 +141,18 @@ export class ControlHandler {
         
     }
 
+    showStats() {
+        Promise.allSettled(this.#promises)
+            .then(() => {
+                for (let controller of this.#controllers) {
+                    if( controller.json.active ) 
+                        controller.showStats()
+                }
+            })
+            .catch(ex => {
+                debug(ex)
+                throw new Error(ex)
+            })
+    }
+
 }
