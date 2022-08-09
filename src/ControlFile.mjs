@@ -97,29 +97,33 @@ export class ControlFile extends Controller {
             //debug('fileController %O', fileController)
 
             if (fileController.title !== undefined && typeof fileController.title !== 'string')
-                throw new Error ('')
+                throw new Error ('Provided controller.title is not of typeof "string".')
 
             if (fileController.active !== undefined && typeof fileController.active !== 'boolean')
-                throw new Error ('')
+                throw new Error ('Provided controller.active is not of typeof "boolean".')
 
-            if (fileController.writeLevels !== undefined && typeof fileController.writeLevels !== 'object')
-                if (!Array.isArray(fileController.writeLevels))
-                    throw new Error ('')
+            if (fileController.writeLevels !== undefined && typeof fileController.writeLevels !== 'object') {
+                if (!Array.isArray(fileController.writeLevels)) {
+                    throw new Error ('Provided controller.writeLevels is not of typeof "array".')
+                }
+            } else {
+                throw new Error ('Provided controller.writeLevels is not of typeof "object".')
+            }
 
             if (fileController.format !== undefined && typeof fileController.format !== 'string')
-                throw new Error ('')
+                throw new Error ('Provided controller.format is not of typeof "string".')
 
             if (fileController.filename !== undefined && typeof fileController.filename !== 'string')  
-                throw new Error ('')
+                throw new Error ('Provided controller.filename is not of typeof "string".')
 
             if (fileController.maxsize_in_mb != undefined && typeof fileController.maxsize_in_mb !== 'number')
-                throw new Error ('')
+                throw new Error ('Provided controller.maxsize_in_mb is not of typeof "number".')
 
             if (fileController.backups_kept != undefined && typeof fileController.backups_kept !== 'number')
-                throw new Error ('')
+                throw new Error ('Provided controller.backups_kept is not of typeof "number".')
 
             if (fileController.gzip_backups != undefined && typeof fileController.gzip_backups !== 'boolean')
-                throw new Error ('')
+                throw new Error ('Provided controller.gzip_backups is not of typeof "boolean".')
 
         }
         return true
@@ -177,8 +181,6 @@ export class ControlFile extends Controller {
     entry(logEntry) {
         super.entry(logEntry)
         //debug('entry')
-
-        
     }
     
 }
