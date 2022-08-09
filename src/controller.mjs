@@ -32,6 +32,7 @@ export class Controller {
     }
 
     get json() { return this.#json }
+    set json(value) { this.#json = value}
     get stats() { return this.#stats }
 
     /**

@@ -2,66 +2,110 @@ import Debug from 'debug'
 import util from 'util'
 const debug = Debug('logish:console')
 import { Controller } from './controller.mjs'
-import Ajv from 'ajv'
 
 
 export class ControlConsole extends Controller {
 
-
-    colorSchema = {
-        type: 'object',
-        properties: {
-            trace : { type: 'string', default: '\x1b[32m' },
-            debug: { type: 'string', default: '\x1b[36m' },
-            info : { type: 'string', default: '\x1b[37m' },
-            warn: { type: 'string', default: '\x1b[33m' },
-            error : { type: 'string', default: '\x1b[35m' },
-            fatal: { type: 'string', default: '\x1b[31m' },
-            reset: { type: 'string', default: '\x1b[0m' }
-        },
-        additionalProperties: false
+    #configDefaultScheme = {
+        name: 'console',
+        classname: 'ControlConsole',
+        module : './controlConsole.mjs',
+        active: true,
+        displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
+        format : '%datetime %level %namespace %entry %performance',
+        useColor: true,
+        colors : {
+            trace   : '\x1b[32m',    debug   : '\x1b[36m',
+            info    : '\x1b[37m',    warn    : '\x1b[33m',
+            error   : '\x1b[35m',    fatal   : '\x1b[31m',
+            reset   : '\x1b[0m'
+        }
     }
 
-    configSchema = {
-        type: 'object',
-        properties: {
-            name : { type: 'string' },
-            classname: { type: 'string' },
-            module : { type: 'string' },
-            active: { type: 'boolean', default: 'true' },
-
-            displayLevels: { type: 'array', default: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'] },
-            format : { type: 'string', default :'[%date] [%level] %entry %perf' },
-            useColors: {type: 'boolean', default: true },
-            colors: this.colorSchema
-        },
-        required: ['classname', 'module'],
-        additionalProperties: true
-    }
-
+    /**
+     * 
+     * @param {*} controllerConfig 
+     */
     constructor(controllerConfig) {
         super(controllerConfig)
         debug('constructor')
 
-        this.#validate()
+        this.configure(controllerConfig)
+            
+    }
+
+    /**
+     * 
+     * @param {*} controllerConfig 
+     * @returns 
+     */
+    configure(controllerConfig) {
+
+        let result = false
+        if (controllerConfig !== undefined && typeof controllerConfig === 'object') {
+            if (this.validate(controllerConfig)) {
+                this.#assignConfigValues(controllerConfig)
+                result = true
+            }
+        } else {
+            // completely assign default values to the configuration. overrides the
+            // config assignment in the super.constructor
+            this.json = this.#configDefaultScheme
+            result = true
+        }
+        return result
     }
 
 
     /**
      * 
+     * @param {*} controllerConfig 
      */
-    #validate() {
+    validate(controllerConfig) {
         debug('validateConfig')
-        let confg = this.json
 
-        let schemaValidator = new Ajv()
-        let testSchemaValidator = schemaValidator.compile(this.configSchema)
-        let valid = testSchemaValidator(confg)
-        if (!valid) { 
-            debug('validation errors %O', testSchemaValidator.errors)
-            console.error('validation errors %O', testSchemaValidator.errors)
-            throw new Error('Control.validate() has failed. See previous validation errors in console.error entry.')
+        // controllerConfig is validated to be typeof object by this.configure at this point
+
+        // if property exists, the validate the type of the property
+        if (controllerConfig.active !== undefined && typeof controllerConfig.active !==  'boolean')
+            throw new Error ('Provided controller.active is not typeof "boolean".')
+
+        if (controllerConfig.displayLevels !== undefined && typeof controllerConfig.displayLevels === 'object') {
+            if (!Array.isArray(controllerConfig.displayLevels)) {
+                throw new Error ('Provided controller.displayLevels is not of typeof "array".')
+            }
+        } else {
+            throw new Error ('Provided controller.displayLevels is not typeof "object(array)".')
         }
+
+        if (controllerConfig.format !== undefined && typeof controllerConfig.format !== 'string') 
+            throw new Error ('Provided controller.format is not typeof "string".')
+
+        if (controllerConfig.useColor !== undefined && typeof controllerConfig.useColor !== 'boolean') 
+            throw new Error ('Provided controller.useColor is not typeof "boolean".')
+
+        return true
+    }
+
+    /**
+     * 
+     * @param {*} controllerConfig 
+     */
+    #assignConfigValues(controllerConfig) {
+        debug('assignConfigValues')
+
+        // if property exists then assign the value - otherwise assign the default value
+        if (controllerConfig.active !== undefined) this.json.active = controllerConfig.active
+        else this.json.active = this.#configDefaultScheme.active
+
+        if (controllerConfig.displayLevels !== undefined) this.json.displayLevels = controllerConfig.displayLevels
+        else this.json.displayLevels = this.#configDefaultScheme.displayLevels
+
+        if (controllerConfig.format !== undefined) this.json.format = controllerConfig.format
+        else this.json.format = this.#configDefaultScheme.format
+        
+        if (controllerConfig.useColor !== undefined) this.json.useColor = controllerConfig.useColor
+        else this.json.useColor = this.#configDefaultScheme.useColor
     }
         
 
