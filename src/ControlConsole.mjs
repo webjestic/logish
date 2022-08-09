@@ -46,6 +46,8 @@ export class ControlConsole extends Controller {
             if (this.validate(controllerConfig)) {
                 this.#assignConfigValues(controllerConfig)
                 result = true
+            } else {
+                throw new Error ('Error validating custom config.')
             }
         } else {
             // completely assign default values to the configuration. overrides the
@@ -53,6 +55,8 @@ export class ControlConsole extends Controller {
             this.json = this.#configDefaultScheme
             result = true
         }
+
+        debug('console config: %O', this.json)
         return result
     }
 
@@ -62,7 +66,7 @@ export class ControlConsole extends Controller {
      * @param {*} controllerConfig 
      */
     validate(controllerConfig) {
-        debug('validateConfig')
+        debug('validate')
 
         // controllerConfig is validated to be typeof object by this.configure at this point
 
@@ -70,20 +74,31 @@ export class ControlConsole extends Controller {
         if (controllerConfig.active !== undefined && typeof controllerConfig.active !==  'boolean')
             throw new Error ('Provided controller.active is not typeof "boolean".')
 
+        debug('active')
         if (controllerConfig.displayLevels !== undefined && typeof controllerConfig.displayLevels === 'object') {
+            debug('displayLevels')
             if (!Array.isArray(controllerConfig.displayLevels)) {
+                debug('displayLevels not array')
                 throw new Error ('Provided controller.displayLevels is not of typeof "array".')
             }
-        } else {
-            throw new Error ('Provided controller.displayLevels is not typeof "object(array)".')
         }
 
+        debug('format')
         if (controllerConfig.format !== undefined && typeof controllerConfig.format !== 'string') 
             throw new Error ('Provided controller.format is not typeof "string".')
 
+        debug('useColor')
         if (controllerConfig.useColor !== undefined && typeof controllerConfig.useColor !== 'boolean') 
             throw new Error ('Provided controller.useColor is not typeof "boolean".')
 
+        if (controllerConfig.colors !== undefined && typeof controllerConfig.colors === 'object') {
+            debug('displayLevels')
+            if (!Array.isArray(controllerConfig.colors)) {
+                throw new Error ('Provided controller.colors is not of typeof "array".')
+            }
+        }
+
+        debug('end validate')
         return true
     }
 
@@ -106,6 +121,9 @@ export class ControlConsole extends Controller {
         
         if (controllerConfig.useColor !== undefined) this.json.useColor = controllerConfig.useColor
         else this.json.useColor = this.#configDefaultScheme.useColor
+
+        if (controllerConfig.colors !== undefined) this.json.colors = controllerConfig.colors
+        else this.json.colors = this.#configDefaultScheme.colors
     }
         
 

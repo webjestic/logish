@@ -10,6 +10,7 @@ export class ControlFile extends Controller {
 
 
     #configDefaultScheme = { 
+        active : true,
         files: [
             {
                 title: 'application',
@@ -63,7 +64,6 @@ export class ControlFile extends Controller {
         if (controllerConfig !== undefined && typeof controllerConfig === 'object') {
             if (this.validate(controllerConfig)) {
                 debug('validate pass')
-                debug('json assigned')
                 this.#assignConfigValues(controllerConfig)
                 result = true
             }
@@ -91,43 +91,41 @@ export class ControlFile extends Controller {
             if (!Array.isArray(controllerConfig.files)) {
                 throw new Error ('Provided controller.files is not of typeof "array".')
             }
-        } else {
-            throw new Error ('Provided controller.files is not typeof "object(array)".')
         }
 
         //debug('controllerConfig %O', controllerConfig)
-        for (let fileController of controllerConfig.files) {
-            //debug('fileController %O', fileController)
+        if (controllerConfig.files !== undefined) {
+            for (let fileController of controllerConfig.files) {
+                //debug('fileController %O', fileController)
 
-            if (fileController.title !== undefined && typeof fileController.title !== 'string')
-                throw new Error ('Provided controller.title is not of typeof "string".')
+                if (fileController.title !== undefined && typeof fileController.title !== 'string')
+                    throw new Error ('Provided controller.title is not of typeof "string".')
 
-            if (fileController.active !== undefined && typeof fileController.active !== 'boolean')
-                throw new Error ('Provided controller.active is not of typeof "boolean".')
+                if (fileController.active !== undefined && typeof fileController.active !== 'boolean')
+                    throw new Error ('Provided controller.active is not of typeof "boolean".')
 
-            if (fileController.writeLevels !== undefined && typeof fileController.writeLevels === 'object') {
-                if (!Array.isArray(fileController.writeLevels)) {
-                    throw new Error ('Provided controller.writeLevels is not of typeof "array".')
+                if (fileController.writeLevels !== undefined && typeof fileController.writeLevels === 'object') {
+                    if (!Array.isArray(fileController.writeLevels)) {
+                        throw new Error ('Provided controller.writeLevels is not of typeof "array".')
+                    }
                 }
-            } else {
-                throw new Error ('Provided controller.writeLevels is not of typeof "object".')
+
+                if (fileController.format !== undefined && typeof fileController.format !== 'string')
+                    throw new Error ('Provided controller.format is not of typeof "string".')
+
+                if (fileController.filename !== undefined && typeof fileController.filename !== 'string')  
+                    throw new Error ('Provided controller.filename is not of typeof "string".')
+
+                if (fileController.maxsize_in_mb != undefined && typeof fileController.maxsize_in_mb !== 'number')
+                    throw new Error ('Provided controller.maxsize_in_mb is not of typeof "number".')
+
+                if (fileController.backups_kept != undefined && typeof fileController.backups_kept !== 'number')
+                    throw new Error ('Provided controller.backups_kept is not of typeof "number".')
+
+                if (fileController.gzip_backups != undefined && typeof fileController.gzip_backups !== 'boolean')
+                    throw new Error ('Provided controller.gzip_backups is not of typeof "boolean".')
+
             }
-
-            if (fileController.format !== undefined && typeof fileController.format !== 'string')
-                throw new Error ('Provided controller.format is not of typeof "string".')
-
-            if (fileController.filename !== undefined && typeof fileController.filename !== 'string')  
-                throw new Error ('Provided controller.filename is not of typeof "string".')
-
-            if (fileController.maxsize_in_mb != undefined && typeof fileController.maxsize_in_mb !== 'number')
-                throw new Error ('Provided controller.maxsize_in_mb is not of typeof "number".')
-
-            if (fileController.backups_kept != undefined && typeof fileController.backups_kept !== 'number')
-                throw new Error ('Provided controller.backups_kept is not of typeof "number".')
-
-            if (fileController.gzip_backups != undefined && typeof fileController.gzip_backups !== 'boolean')
-                throw new Error ('Provided controller.gzip_backups is not of typeof "boolean".')
-
         }
         return true
     }
@@ -139,12 +137,22 @@ export class ControlFile extends Controller {
     #assignConfigValues(controllerConfig) {
         debug('assignConfigValues')
         
+        if (controllerConfig.files === undefined) {
+            debug('assiging default.files')
+            controllerConfig.files = this.#configDefaultScheme.files
+        }
+
+        if (controllerConfig.active !== undefined) this.json.active = controllerConfig.active
+        else this.json.active = this.#configDefaultScheme.active
+
+        debug('json %O', this.json)
+
         // if property exists then assign the value - otherwise assign the default value
         let idx = 0
         
         for (let fileController of controllerConfig.files) {
 
-            debug('Title', this.#configDefaultScheme.files[idx].title)
+            debug('Title A', this.#configDefaultScheme.files[idx].title)
 
             if (fileController.title !== undefined) this.json.files[idx].title = fileController.title
             else this.json.files[idx].title = this.#configDefaultScheme.files[idx].title
@@ -170,7 +178,7 @@ export class ControlFile extends Controller {
             if (fileController.gzip_backups !== undefined) this.json.files[idx].gzip_backups = fileController.gzip_backups
             else this.json.files[idx].gzip_backups = this.#configDefaultScheme.files[idx].gzip_backups
 
-            debug('Title', this.json.files[idx].title)
+            debug('Title B', this.json.files[idx].title)
 
             // update fileController.filename with proper, full path.
             this.#prepFilename(fileController)

@@ -14,61 +14,7 @@ export class Config {
         levels: Object.freeze({ 'TRACE': 0, 'DEBUG': 1, 'INFO': 2, 'WARN': 3, 'ERROR': 4, 'FATAL': 5 }),
         level : 'trace',
         performanceTime : true,
-        controllers : [
-            {
-                name: 'console',
-                classname: 'ControlConsole',
-                module : './controlConsole.mjs',
-                active: true,
-                displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
-                format : '%datetime %level %namespace %entry %performance',
-                useColor: true,
-                colors : {
-                    trace   : '\x1b[32m',    debug   : '\x1b[36m',
-                    info    : '\x1b[37m',    warn    : '\x1b[33m',
-                    error   : '\x1b[35m',    fatal   : '\x1b[31m',
-                    reset   : '\x1b[0m'
-                }
-            },
-            {
-                name: 'file',
-                classname: 'ControlFile',
-                module : './controlFile.mjs',
-                active: true,
-                files: [
-                    {
-                        title: 'application',
-                        active : true,
-                        writeLevels: ['info', 'warn'],
-                        format : '[%date] [%level] %namespace %host %protocol %ip - %entry %performance',
-                        filename: 'logs/app.log',   
-                        maxsize_in_mb: 2,
-                        backups_kept: 2, 
-                        gzip_backups : false
-                    },
-                    {
-                        title: 'errors',
-                        active : true,
-                        writeLevels: ['error', 'fatal'],
-                        format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
-                        filename: 'logs/errors.log',   
-                        maxsize_in_mb: 2,
-                        backups_kept: 2, 
-                        gzip_backups : false
-                    },
-                    {
-                        title: 'development',
-                        active : true,
-                        writeLevels: ['trace', 'debug'],
-                        format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
-                        filename: 'logs/dev.log',   
-                        maxsize_in_mb: 2,
-                        backups_kept: 2, 
-                        gzip_backups : false
-                    }
-                ]
-            }
-        ]
+        controllers : []
     }
 
     #levelsdef = this.#configDefaultSchema.levels
@@ -111,6 +57,7 @@ export class Config {
         } else {
             // completely assign default values to the configuration
             this.#json = this.#configDefaultSchema
+            this.#assignConfigValues(this.#configDefaultSchema)
             result = true
         }
         return result
@@ -169,5 +116,28 @@ export class Config {
 
         if (customConfig.controllers !== undefined) this.json.controllers = customConfig.controllers
         else this.json.controllers = this.#configDefaultSchema.controllers
+
+        if (this.json.controllers.length <= 0) {
+            customConfig.controllers.push( { name: 'console' } )
+            customConfig.controllers.push( { name: 'file' } )
+        }
+        
+        // assign default module and class name for controller CONSOLE and FILE
+        for (let customController of customConfig.controllers) {
+            if (customController.name !== undefined && typeof customController.name === 'string') {
+                if (customController.name.toLowerCase() === 'console') {
+                    customController.classname = 'ControlConsole'
+                    customController.module = './controlConsole.mjs'
+                }
+                if (customController.name.toLowerCase() === 'file') {
+                    customController.classname = 'ControlFile'
+                    customController.module = './controlFile.mjs' 
+                }
+            } else {
+                throw new Error ('Config.controllers[index].name is required.')
+            }
+        }
+
+        debug ('config %O', this.json)
     }
 }

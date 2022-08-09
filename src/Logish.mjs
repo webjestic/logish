@@ -20,8 +20,7 @@ export class Logish extends EventEmitter {
         super()
         debug('constructor')
         
-        this.#config = new Config( configJSON) 
-        
+        this.#config = new Config(configJSON) 
         this.#setup()
     }
 

@@ -4,15 +4,13 @@ import Logish from '../src/index.js'
 import { exampleA } from './exampleA.mjs'
 import { exampleB } from './exampleB.mjs'
 
-
+/*
 const logishConfig = {
     level : 'trace',
     performanceTime : true,
     controllers : [
         {
             name: 'console',
-            classname: 'ControlConsole',
-            module : './controlConsole.mjs',
             active: true,
             displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
             format : '%datetime %level %namespace %entry %performance',
@@ -26,8 +24,6 @@ const logishConfig = {
         },
         {
             name: 'file',
-            classname: 'ControlFile',
-            module : './controlFile.mjs',
             active: true,
             files: [
                 {
@@ -64,8 +60,10 @@ const logishConfig = {
         }
     ]
 }
+*/
 
-const log = new Logish(logishConfig)
+
+const log = new Logish()
 log.setNamespace('example:index')
 log.trace('Tracing call')
 
