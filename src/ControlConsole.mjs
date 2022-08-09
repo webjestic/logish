@@ -45,9 +45,8 @@ export class ControlConsole extends Controller {
             if (this.validate(controllerConfig)) {
                 this.#assignConfigValues(controllerConfig)
                 result = true
-            } else {
+            } else
                 throw new Error ('Error validating custom config.')
-            }
         } else {
             // completely assign default values to the configuration. overrides the
             // config assignment in the super.constructor
@@ -194,14 +193,12 @@ export class ControlConsole extends Controller {
                 // util.inspect(object, showHidden=false, depth=2, colorize=true)
                 // https://nodejs.org/en/knowledge/getting-started/how-to-use-util-inspect/
                 console.log(`${entry} %O`, util.inspect(logEntry.data, false, 10, this.json.useColor))
-            } else { 
+            } else
                 console.log(entry )
-            }
 
             logEntry.entries.push( { 'console': entry } )
-        } else {
+        } else
             throw new Error ('No log message. Message is required.')
-        }
     }
 
     /**

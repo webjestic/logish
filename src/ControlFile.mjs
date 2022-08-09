@@ -88,9 +88,9 @@ export class ControlFile extends Controller {
         // if property exists, the validate the type of the property
 
         if (controllerConfig.files !== undefined && typeof controllerConfig.files === 'object') {
-            if (!Array.isArray(controllerConfig.files)) {
+            if (!Array.isArray(controllerConfig.files)) 
                 throw new Error ('Provided controller.files is not of typeof "array".')
-            }
+            
         }
 
         //debug('controllerConfig %O', controllerConfig)
@@ -105,9 +105,8 @@ export class ControlFile extends Controller {
                     throw new Error ('Provided controller.active is not of typeof "boolean".')
 
                 if (fileController.writeLevels !== undefined && typeof fileController.writeLevels === 'object') {
-                    if (!Array.isArray(fileController.writeLevels)) {
+                    if (!Array.isArray(fileController.writeLevels)) 
                         throw new Error ('Provided controller.writeLevels is not of typeof "array".')
-                    }
                 }
 
                 if (fileController.format !== undefined && typeof fileController.format !== 'string')
@@ -234,9 +233,8 @@ export class ControlFile extends Controller {
 
             const fileKey = `file_${controller.title}`
             logEntry.entries.push( { [fileKey]: entry } )
-        } else {
+        } else 
             throw new Error ('No log message. Message is required to add a log entry.')
-        }
     }
 
     /**
@@ -285,9 +283,8 @@ export class ControlFile extends Controller {
         const stats = this.#stat(controller.filename)
         if (stats !== undefined) {
             const mb = Math.round(((stats.size / 1000) / 1000 ) * 10000) /10000 
-            if (mb > options.maxsize_in_mb) {
+            if (mb > options.maxsize_in_mb)
                 this.#backupFileName(controller.filename, options)
-            }
         }
     }
 
@@ -344,12 +341,12 @@ export class ControlFile extends Controller {
 
         // CREATE PROCESS ORDER
         for (let index = ls.length; index >= 0; index--) {
-            if (ls[index] === undefined && index > options.backups_kept) {
+            if (ls[index] === undefined && index > options.backups_kept) 
                 this.#deleteFile (path.join(dir, ls[index-1]))
-            } else {
-                if (ls[index] === undefined ) {
+            else {
+                if (ls[index] === undefined ) 
                     this.#rotateFile(path.join(dir, ls[index-1]), path.join(dir, `${file}_${date}_${index}${ext}${gzip}` ))
-                } else {
+                else {
                     if (ls[index-1] !== undefined)
                         this.#rotateFile(path.join(dir, ls[index-1]), path.join(dir, ls[index]))
                 }

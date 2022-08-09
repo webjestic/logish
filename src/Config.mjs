@@ -76,9 +76,8 @@ export class Config {
         if ( customConfig.level !== undefined && typeof customConfig.level === 'string') {
             if (this.#configDefaultSchema.levels[customConfig.level.toUpperCase()] === undefined)
                 throw new Error('Provided config.level is not a valid logish level.')
-        } else {
+        } else 
             throw new Error('Provided config.level is not typeof "string".')
-        }
 
         if (customConfig.performanceTime !== undefined && typeof customConfig.performanceTime !== 'boolean') 
             throw new Error('Provided config.performanceTime is not typeof "boolean".')
@@ -87,9 +86,8 @@ export class Config {
             if (!Array.isArray(customConfig.controllers))
                 throw new Error('Provided config.controllers is not typeof "array".')
 
-        } else {
+        } else
             throw new Error('Provided config.controllers is not typeof "object".')
-        }
 
         // cannot and should not validate controller specific configurations.
         // this needs to be handled within the controller itself. this validation
@@ -119,7 +117,7 @@ export class Config {
 
         if (this.json.controllers.length <= 0) {
             customConfig.controllers.push( { name: 'console' } )
-            customConfig.controllers.push( { name: 'file' } )
+            customConfig.controllers.push( { name: 'file', files: [] } )
         }
         
         // assign default module and class name for controller CONSOLE and FILE
@@ -133,9 +131,8 @@ export class Config {
                     customController.classname = 'ControlFile'
                     customController.module = './controlFile.mjs' 
                 }
-            } else {
+            } else
                 throw new Error ('Config.controllers[index].name is required.')
-            }
         }
 
         debug ('config %O', this.json)
