@@ -1,6 +1,9 @@
 import Debug from 'debug'
 const debug = Debug('logish:file')
 import { Controller } from './Controller.mjs'
+import  os  from 'os'
+import path from 'path'
+import fs from 'fs'
 
 
 export class ControlFile extends Controller {
@@ -12,7 +15,7 @@ export class ControlFile extends Controller {
                 title: 'application',
                 active : true,
                 writeLevels: ['info', 'warn'],
-                format : '[%date] [%level] %namespace %host %protocol %ip - %entry %performance',
+                format : '[%datetime %level] %namespace %host - %entry %performance',
                 filename: 'logs/app.log',   
                 maxsize_in_mb: 2,
                 backups_kept: 2, 
@@ -22,7 +25,7 @@ export class ControlFile extends Controller {
                 title: 'errors',
                 active : true,
                 writeLevels: ['error', 'fatal'],
-                format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
+                format : '[%datetime %level] %namespace %host - %entry %performance',
                 filename: 'logs/errors.log',   
                 maxsize_in_mb: 2,
                 backups_kept: 2, 
@@ -32,7 +35,7 @@ export class ControlFile extends Controller {
                 title: 'development',
                 active : true,
                 writeLevels: ['trace', 'debug'],
-                format : '[%date] [%level] %namespace %host %protocol %ip - %entry %perf',
+                format : '[%datetime %level] %namespace %host - %entry %performance',
                 filename: 'logs/dev.log',   
                 maxsize_in_mb: 2,
                 backups_kept: 2, 
@@ -149,7 +152,7 @@ export class ControlFile extends Controller {
             if (fileController.active !== undefined) this.json.files[idx].active = fileController.active
             else this.json.files[idx].active = fileController.active
 
-            if (fileController.writeLevels !== undefined) this.json.files[idx].writeLevels = fileController.writeLevels
+            if (fileController.writeLevels !== undefined) this.json.files[idx].writeLevels = fileController.writeLevels.map(lvl => lvl.toLowerCase())
             else this.json.files[idx].writeLevels = this.#configDefaultScheme.files[idx].writeLevels
 
             if (fileController.format !== undefined) this.json.files[idx].format = fileController.format
@@ -169,6 +172,11 @@ export class ControlFile extends Controller {
 
             debug('Title', this.json.files[idx].title)
 
+            // update fileController.filename with proper, full path.
+            this.#prepFilename(fileController)
+            // create log folder if needed
+            this.#mkdir(fileController)
+
             idx++
         }
         
@@ -181,6 +189,205 @@ export class ControlFile extends Controller {
     entry(logEntry) {
         super.entry(logEntry)
         //debug('entry')
+
+        //debug(this.json.files)
+        for (let fileController of this.json.files) {
+            //debug('fileController %O', fileController)
+            if (fileController.active === true) {
+                if (fileController.writeLevels.indexOf(logEntry.level.toLowerCase()) > -1)
+                    this.appendToFile(fileController, logEntry)
+            }
+        }
+    }
+
+    /**
+     * @access public
+     * 
+     * @param {*} controller 
+     * @param {*} entry 
+     */
+    appendToFile(controller, logEntry) {
+
+        let entry = undefined
+        if (logEntry.message !== undefined)  {
+            entry = super.formatEntry(logEntry, controller.format)
+            entry += os.EOL
+            //debug('entr: %o', entry)
+            
+            try {
+                this.#backupFiles(controller)
+                fs.appendFileSync(controller.filename, entry)
+                if (logEntry.data) 
+                    fs.appendFileSync(controller.filename, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
+            } catch (e) {
+                console.log (e.message, e.code, e.stack)
+            }
+            
+
+            const fileKey = `file_${controller.title}`
+            logEntry.entries.push( { [fileKey]: entry } )
+        } else {
+            throw new Error ('No log message. Message is required to add a log entry.')
+        }
+    }
+
+    /**
+     * @access protected
+     * 
+     * @param {*} controller 
+     */
+    #prepFilename(controller) {
+        if (typeof controller.filename !== 'string' || controller.filename.length === 0) 
+            throw new Error(`Invalid filename: ${controller.filename}`)
+    
+        if( (controller.filename.endsWith(path.sep))  )
+            throw new Error(`Filename is a directory: ${controller.filename}`)
+
+        if ((!controller.filename.startsWith(path.sep) && !controller.filename.startsWith('.'))) 
+            controller.filename = process.cwd() + path.sep + controller.filename
+        
+        // handle the ~ (tilde) symbol, translating it to the OS Home Directory
+        controller.filename = controller.filename.replace(new RegExp(`^~(?=${path.sep}.+)`), os.homedir()) 
+        controller.filename =  path.normalize(controller.filename)  
+        controller.filename =  path.resolve(controller.filename)  
+    }
+
+    /**
+     * 
+     * @param {*} controller 
+     */
+    #mkdir(controller) {
+        try {
+            if (!fs.existsSync(path.dirname(controller.filename)))
+                fs.mkdirSync(path.dirname(controller.filename), { recursive: true })
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
+    }
+
+    /**
+     * 
+     * @param {*} controller 
+     */
+    #backupFiles(controller) {
+        let options = this.#prepOptions(controller)
+
+        // 1 megabyte equals 1000 kilobytes and 1000 kilobytes equals 1,000,000 bytes. 
+        // rounded to the 4th decimal point
+        const stats = this.#stat(controller.filename)
+        if (stats !== undefined) {
+            const mb = Math.round(((stats.size / 1000) / 1000 ) * 10000) /10000 
+            if (mb > options.maxsize_in_mb) {
+                this.#backupFileName(controller.filename, options)
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param {*} controller 
+     * @returns 
+     */
+    #prepOptions(controller) {
+        let options = {
+        }
+        if ( typeof controller.maxsize_in_mb !== 'number' ) controller.maxsize_in_mb = 1
+        options.maxsize_in_mb = controller.maxsize_in_mb 
+
+        if ( typeof controller.backups_kept !== 'number' ) controller.backups_kept = 1
+        options.backups_kept = !controller.backups_kept && controller.backups_kept !== 0 ? 5 : controller.backups_kept
+
+        if ( typeof controller.gzip_backups !== 'boolean') controller.gzip_backups = false
+        options.gzip_backups = controller.gzip_backups
+
+        return options
+    }
+
+    /**
+     * 
+     * @param {*} filename 
+     * @returns 
+     */
+    #stat(filename) {
+        let result = undefined
+        try {
+            if (fs.existsSync(filename))
+                result = fs.statSync(filename)
+        } catch(e) {
+            console.log (e.message, e.code, e.stack)
+        }
+        return result
+    }
+
+    /**
+     * 
+     * @param {*} filename 
+     * @param {*} options 
+     */
+    #backupFileName(filename, options) {
+        
+        const dir = path.dirname(filename)
+        const ext = path.extname(filename)
+        const file = path.basename(filename, ext)
+        const date = (new Date().toISOString()).substring(0,10)
+        const gzip = options.gzip_backups ? '.gz' : ''
+
+        const ls = this.#readdirSync(dir, file)
+
+        // CREATE PROCESS ORDER
+        for (let index = ls.length; index >= 0; index--) {
+            if (ls[index] === undefined && index > options.backups_kept) {
+                this.#deleteFile (path.join(dir, ls[index-1]))
+            } else {
+                if (ls[index] === undefined ) {
+                    this.#rotateFile(path.join(dir, ls[index-1]), path.join(dir, `${file}_${date}_${index}${ext}${gzip}` ))
+                } else {
+                    if (ls[index-1] !== undefined)
+                        this.#rotateFile(path.join(dir, ls[index-1]), path.join(dir, ls[index]))
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param {*} dir 
+     * @param {*} file 
+     * @returns 
+     */
+    #readdirSync(dir, file) {
+        let result = undefined
+        try {
+            return fs.readdirSync(dir).filter(n => {return n.includes(file)}).sort()
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
+        return result
+    }
+
+    /**
+     * 
+     * @param {*} filename 
+     */
+    #deleteFile(filename) {
+        try {
+            fs.rmSync(filename)
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
+    }
+
+    /**
+     * 
+     * @param {*} filename 
+     * @param {*} targetFile 
+     */
+    #rotateFile(filename, targetFile) {
+        try {
+            fs.renameSync(filename, targetFile)
+        } catch (e) {
+            console.log (e.message, e.code, e.stack)
+        }
     }
     
 }
