@@ -39,6 +39,7 @@ export class Logish extends EventEmitter {
      */
     #setup() {
         debug('setup')
+        this.#setupEnv()
         this.#setupControls()
         this.#setupLevelMethods()
     }
@@ -127,6 +128,21 @@ export class Logish extends EventEmitter {
         this.emit('LogEvent', logEntry.json)
         
         return true
+    }
+
+    /**
+     * 
+     */
+    #setupEnv() {
+        let lenv = undefined
+        Object.keys(process.env).forEach(key => {
+            if (key.toUpperCase().includes('LOGISH'))
+                lenv = process.env[key]
+        })
+
+        debug('env %O', lenv)
+        if (lenv !== undefined) this.#env = lenv.split(',')
+        debug('this.#env %o', this.#env)
     }
 
     /**

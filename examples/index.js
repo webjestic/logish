@@ -12,6 +12,7 @@ const defaultLogishConfig = {
         {
             name: 'console',
             active: true,
+            displayOnlyEnvNamespace: true,
             displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
             format : '%datetime %level %namespace %entry %performance',
             useColor: true,

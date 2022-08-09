@@ -11,6 +11,7 @@ export class ControlConsole extends Controller {
         classname: 'ControlConsole',
         module : './controlConsole.mjs',
         active: true,
+        displayOnlyEnvNamespace: false,
         displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
         format : '%datetime %level %namespace %entry %performance',
         useColor: true,
@@ -29,9 +30,7 @@ export class ControlConsole extends Controller {
     constructor(controllerConfig) {
         super(controllerConfig)
         debug('constructor')
-
-        this.configure(controllerConfig)
-            
+        this.configure(controllerConfig)            
     }
 
     /**
@@ -91,6 +90,10 @@ export class ControlConsole extends Controller {
         if (controllerConfig.useColor !== undefined && typeof controllerConfig.useColor !== 'boolean') 
             throw new Error ('Provided controller.useColor is not typeof "boolean".')
 
+        debug('displayOnlyEnvNamespace')
+        if (controllerConfig.displayOnlyEnvNamespace !== undefined && typeof controllerConfig.displayOnlyEnvNamespace !== 'boolean') 
+            throw new Error ('Provided controller.displayOnlyEnvNamespace is not typeof "boolean".')
+
         debug('colors')
         if (controllerConfig.colors !== undefined && typeof controllerConfig.colors !== 'object') 
             throw new Error ('Provided controller.colors is not of typeof "object".')
@@ -120,6 +123,9 @@ export class ControlConsole extends Controller {
         if (controllerConfig.useColor !== undefined) this.json.useColor = controllerConfig.useColor
         else this.json.useColor = this.#configDefaultScheme.useColor
 
+        if (controllerConfig.displayOnlyEnvNamespace !== undefined) this.json.displayOnlyEnvNamespace = controllerConfig.displayOnlyEnvNamespace
+        else this.json.displayOnlyEnvNamespace = this.#configDefaultScheme.displayOnlyEnvNamespace
+
         if (controllerConfig.colors !== undefined) this.json.colors = controllerConfig.colors
         else this.json.colors = this.#configDefaultScheme.colors
     }
@@ -132,12 +138,42 @@ export class ControlConsole extends Controller {
     entry(logEntry) {
         debug('entry')
 
-        // if log level is intended to be dispalyed to console
-        if (this.json.displayLevels.indexOf(logEntry.level) > -1) {
-            super.entry(logEntry)
-            this.formatEntry(logEntry)
-            this.writeToConsole(logEntry)
+        // if log level is configured for display
+        if (this.json.displayLevels.indexOf(logEntry.level) <= -1) return false 
+        if (this.json.displayOnlyEnvNamespace && !this.#canDisplayEnvNamespace(logEntry))  return false
+
+
+        
+        super.entry(logEntry)
+        this.formatEntry(logEntry)
+        this.writeToConsole(logEntry)
+        return true
+    }
+
+    /**
+     * 
+     * @returns boolean - If namespace is restricted (meaning this namespace should not be displayed
+     *                      under these coniditions) it returns true
+     */
+    #canDisplayEnvNamespace(logEntry) {
+        // this.json.displayOnlyEnvNamespace
+        let result = false
+
+        if (logEntry.envVars !== undefined && logEntry.namespace !== undefined) {
+            if (this.json.displayOnlyEnvNamespace === true) {
+                debug('restricting namespace rule')
+
+                // if logEntry.namespace is NOT found in logEntry.envVars,
+                // then restrict it by assigning TRUE
+                const namespaceWildcard = logEntry.namespace.substring(0, logEntry.namespace.indexOf(':')+1) + '*'
+                debug ('namespaceWildcard %o', namespaceWildcard)
+                if (logEntry.envVars.indexOf(logEntry.namespace) > -1 || logEntry.envVars.indexOf(namespaceWildcard) > -1) {
+                    debug ('namespaceRestricted = TRUE')
+                    result = true
+                }
+            }
         }
+        return result
     }
 
     /**
