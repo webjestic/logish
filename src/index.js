@@ -1,4 +1,4 @@
 
-import { Logish } from './Logish.mjs'
+import { Logish } from './LogishX.mjs'
 
 export default Logish

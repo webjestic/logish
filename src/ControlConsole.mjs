@@ -1,7 +1,7 @@
 import Debug from 'debug'
 import util from 'util'
 const debug = Debug('logish:console')
-import { Controller } from './controller.mjs'
+import { Controller } from './ControllerX.mjs'
 
 
 export class ControlConsole extends Controller {

@@ -1,6 +1,6 @@
 import Debug from 'debug'
 const debug = Debug('logish:file')
-import { Controller } from './controller.mjs'
+import { Controller } from './ControllerX.mjs'
 
 
 export class ControlFile extends Controller {

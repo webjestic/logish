@@ -2,7 +2,7 @@
 import Debug from 'debug'
 const debug = Debug('logish:class')
 import { EventEmitter } from 'events'
-import { Config } from './Config.mjs'
+import { Config } from './ConfigX.mjs'
 import { LogEntry } from './LogEntry.mjs'
 import { ControlHandler } from './ControlHandler.mjs'
 
