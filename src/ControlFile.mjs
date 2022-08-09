@@ -102,7 +102,7 @@ export class ControlFile extends Controller {
             if (fileController.active !== undefined && typeof fileController.active !== 'boolean')
                 throw new Error ('Provided controller.active is not of typeof "boolean".')
 
-            if (fileController.writeLevels !== undefined && typeof fileController.writeLevels !== 'object') {
+            if (fileController.writeLevels !== undefined && typeof fileController.writeLevels === 'object') {
                 if (!Array.isArray(fileController.writeLevels)) {
                     throw new Error ('Provided controller.writeLevels is not of typeof "array".')
                 }
