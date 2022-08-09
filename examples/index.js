@@ -4,8 +4,8 @@ import Logish from '../src/index.js'
 import { exampleA } from './exampleA.mjs'
 import { exampleB } from './exampleB.mjs'
 
-/*
-const logishConfig = {
+
+const defaultLogishConfig = {
     level : 'trace',
     performanceTime : true,
     controllers : [
@@ -60,10 +60,11 @@ const logishConfig = {
         }
     ]
 }
-*/
+
+const logishConfig = defaultLogishConfig
 
 
-const log = new Logish()
+const log = new Logish(logishConfig)
 log.setNamespace('example:index')
 log.trace('Tracing call')
 

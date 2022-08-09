@@ -91,12 +91,10 @@ export class ControlConsole extends Controller {
         if (controllerConfig.useColor !== undefined && typeof controllerConfig.useColor !== 'boolean') 
             throw new Error ('Provided controller.useColor is not typeof "boolean".')
 
-        if (controllerConfig.colors !== undefined && typeof controllerConfig.colors === 'object') {
-            debug('displayLevels')
-            if (!Array.isArray(controllerConfig.colors)) {
-                throw new Error ('Provided controller.colors is not of typeof "array".')
-            }
-        }
+        debug('colors')
+        if (controllerConfig.colors !== undefined && typeof controllerConfig.colors !== 'object') 
+            throw new Error ('Provided controller.colors is not of typeof "object".')
+            
 
         debug('end validate')
         return true
