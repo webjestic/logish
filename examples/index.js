@@ -64,7 +64,6 @@ const defaultLogishConfig = {
 
 const logishConfig = defaultLogishConfig
 
-
 const log = new Logish(logishConfig)
 log.setNamespace('example:index')
 log.trace('Tracing call')
@@ -81,9 +80,7 @@ log.showStats()
 
 // Register a listener
 log.on('LogEvent', (logEntry) => {
-    
     console.log('LogEvent', logEntry)
-    
 })
 
-log.debug('entry 4')
+log.debug('entry 4', logishConfig)

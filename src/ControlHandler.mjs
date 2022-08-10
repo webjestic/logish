@@ -1,12 +1,14 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:controlHandler')
+import { ControlFile } from './ControlFile.mjs'
+import { ControlConsole } from './ControlConsole.mjs'
 
 export class ControlHandler {
 
     /* array of controller instances */
     #controllers = []
-    #promises = []
+    //#promises = []
 
     /**
      * @pattern Singleton
@@ -41,7 +43,11 @@ export class ControlHandler {
         debug('addController')
         //debug('controller %O', controller)
 
-        this.#loadControllerClass(controller)
+        //this.#loadControllerClass(controller)
+        if (controller.name === 'console')
+            this.#controllers.push(new ControlConsole(controller))
+        if (controller.name === 'file')
+            this.#controllers.push(new ControlFile(controller))
     }
 
     /**
@@ -53,6 +59,7 @@ export class ControlHandler {
      * @param {object} controller - The json conifguration of a controller.
      */
     
+    /*
     #loadControllerClass(controller) {
         debug('loadControllerClass')
 
@@ -81,6 +88,7 @@ export class ControlHandler {
         // add the pending promise to the list (array) of pending promises
         this.#promises.push(mod)
     }
+    */
     
 
     /**
@@ -96,6 +104,7 @@ export class ControlHandler {
     
         // log entries may be added before controllers have finished creating,
         // therefore, wait for pending promises to complete before processing.
+        /*
         Promise.allSettled(this.#promises)
             .then(() => {
                 debug('processing entries')
@@ -114,10 +123,16 @@ export class ControlHandler {
                 throw new Error(ex)
             })
         debug('process promises:', this.#promises)
+        */
+        for (let controller of this.#controllers) {
+            if( controller.json.active )
+                controller.entry(logEntry)
+        }
         
     }
 
     showStats() {
+        /*
         Promise.allSettled(this.#promises)
             .then(() => {
                 for (let controller of this.#controllers) {
@@ -129,6 +144,11 @@ export class ControlHandler {
                 debug(ex)
                 throw new Error(ex)
             })
+        */
+        for (let controller of this.#controllers) {
+            if( controller.json.active ) 
+                controller.showStats()
+        }
     }
 
 }

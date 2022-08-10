@@ -27,6 +27,8 @@ export class LogEntry {
     constructor(entry) {
         debug('constructor')
 
+        debug('constructor-entry %O', entry)
+
         const dtime = Date.now()
         this.#json.datetime.timestamp = dtime
         this.#json.datetime.dateString = new Date(dtime).toISOString().replace('T',' ').split('.')[0]
@@ -64,7 +66,7 @@ export class LogEntry {
         if (entry.entries !== undefined && Array.isArray(entry.entries))
             this.#json.entries = entry.entries
 
-        if (entry.data !== undefined && entry.data === 'object')
+        if (entry.data !== undefined && typeof entry.data === 'object')
             this.#json.data = entry.data
     }
 
