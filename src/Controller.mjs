@@ -12,6 +12,8 @@ export class Controller {
 
     /** Coniguration specific only to the controller */
     #json
+
+    /** Simple stats for some fun or interesting viewing */
     #stats = {
         total : 0,
         trace: 0,
@@ -67,9 +69,10 @@ export class Controller {
 
     /**
      * 
-     * @param {*} logEntry 
-     * @param {*} formatStr 
-     * @returns 
+     * @param {LogEntry.json} logEntry 
+     * @param {String} formatStr 
+     * 
+     * @returns {String} transfored format string with values
      */
     formatEntry(logEntry, formatStr) {
         debug('formatEntry')
@@ -101,6 +104,9 @@ export class Controller {
         return (formatStr)// + os.EOL)
     }
 
+    /**
+     * Shows the statistics for the running instance, from all controllers.
+     */
     showStats() {
         console.log(`logish ${this.#json.name} %o`, this.#stats)
     }

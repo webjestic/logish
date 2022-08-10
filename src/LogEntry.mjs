@@ -1,10 +1,10 @@
 
 import Debug from 'debug'
 const debug = Debug('logish:logentry')
-import  os  from 'os'
+import os from 'os'
 
 /**
- * 
+ * Container for all log entry details.
  */
 export class LogEntry {
 
@@ -24,24 +24,30 @@ export class LogEntry {
         data: undefined
     }
 
+    /**
+     * Initializes a standard logEntry object.
+     * 
+     * @param {json} entry Simple json containing basic starter information for a log entry
+     */
     constructor(entry) {
         debug('constructor')
+
+        debug('constructor-entry %O', entry)
 
         const dtime = Date.now()
         this.#json.datetime.timestamp = dtime
         this.#json.datetime.dateString = new Date(dtime).toISOString().replace('T',' ').split('.')[0]
         this.#json.hostname = os.hostname()
         this.#updateEntry(entry)
-
     }
-
 
     get json() { return this.#json }
     set json(value) { this.#updateEntry(value) }
 
     /**
+     * Responsible for assigning the values of an initial log entry.
      * 
-     * @param {object} entry 
+     * @param {json} entry Simple json containing basic starter information for a log entry
      */
     #updateEntry(entry) {
         debug('updateEntry')
@@ -64,8 +70,7 @@ export class LogEntry {
         if (entry.entries !== undefined && Array.isArray(entry.entries))
             this.#json.entries = entry.entries
 
-        if (entry.data !== undefined && entry.data === 'object')
+        if (entry.data !== undefined && typeof entry.data === 'object')
             this.#json.data = entry.data
     }
-
 }

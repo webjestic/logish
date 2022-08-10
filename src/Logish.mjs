@@ -8,14 +8,31 @@ import { ControlHandler } from './ControlHandler.mjs'
 
 import { performance } from 'perf_hooks' // https://nodejs.org/api/perf_hooks.html#performancegetentries
 
+/**
+ * Responsible for setting up an operational environment, for log entries to flow through. 
+ * Entires are to be routed to controllers.
+ */
 export class Logish extends EventEmitter {
 
+    /** Instance of the Config class. Singleton. */
     #config = undefined
+
+    /** Array of LOGISH environment variables. */
     #env = undefined
+
+    /** Instance of the ControlHandler class. Singleton. */
     #controlHandler = undefined
+
+    /** Namespace of the Logish instance. */
     #namespace = undefined
 
-    /** Pattern:  */
+    /**
+     * Class Constructor. Responsible for setting up a proper Logish instance.
+     * 
+     * @access Public
+     * 
+     * @param {object} configJSON - Optional. If not passed, default values are used.
+     */
     constructor(configJSON) {
         super()
         debug('constructor')
@@ -25,23 +42,29 @@ export class Logish extends EventEmitter {
     }
 
 
+    /** Retrieve the current namespace for the instance. */
     getNamespace() { return this.#namespace }
+    /** Set the namespace for the instance. */
     setNamespace(value) { this.#namespace = value }
 
     /**
+     * Responsible for executing all setup methods for creating a proper instance.
      * 
+     * @access Protected
      */
     #setup() {
         debug('setup')
         this.#setupEnv()
-        this.#setupControls()
+        this.#setupControllers()
         this.#setupLevelMethods()
     }
 
     /**
+     * Creates the controller handling instance. Required for actual output.
      * 
+     * @access Protected
      */
-    #setupControls() {
+    #setupControllers() {
         debug('setupControls')
         this.#controlHandler = new ControlHandler(this.#config.json.controllers)
     }
@@ -61,10 +84,19 @@ export class Logish extends EventEmitter {
 
 
     /**
-     * Method used to add log entries for all log levels. 'log' defaults to 'info'.
+     * Method used to add log entries for all log levels. Alias methods are trace(), debug(), etc.
+     * 
+     * Entry point for all log entires. This is a multi-responsibility method:
+     * - Responsible for determining if log entry is valid and able to be ran
+     * - Responsible for building out arguments
+     * - Responsible for executing controller handler
+     * - Responsible for triggering the LogEvent
+     * - Responsible for running any callback code
      * 
      * @access Public
      * @param {any} args 
+     * 
+     * @returns {boolean} true if ran, false if not ran
      */
     entry(...args) {
         debug('entry')
@@ -74,15 +106,17 @@ export class Logish extends EventEmitter {
         // terminte the process if a valid log level is not being used.
         if (this.#config.json.levels[args[0].toUpperCase()] === undefined)
             throw new Error('Invalid log level method alias used. Try info(), debug(), or any valid log level.')
-        if (!this.#allowLevelEntry(args[0])) return false
+        if (!this.#allowLevelEntry(args[0])) {
+            debug('returning false')
+            return false
+        }
 
         // build the logEntry object based on all entry arguments
         let callback = undefined
         let dataIndex = 0
         let entry = { 
             level: args[0],
-            message: args[1] 
-
+            message: args[1]
         }
         if (arguments.length > 2) {
             for (let i = 2; i <= arguments.length-1; i++) {
@@ -125,7 +159,7 @@ export class Logish extends EventEmitter {
     }
 
     /**
-     * 
+     * Responsible for parsing out the PROCESS ENV information and storing it as an array.
      */
     #setupEnv() {
         let lenv = undefined
@@ -144,24 +178,29 @@ export class Logish extends EventEmitter {
      * 
      * @access Protected
      * @param {string} level 
+     * 
      * @returns true if log entry level is less-than-equal-to the logish config.level.
      */
     #allowLevelEntry(level) {
         debug('allowLevelEntry')
 
-        //debug('Config Levels:', this.#config.json.levels)
-        //debug('Defined Level:', this.#config.json.level)
-        //debug('Defined Level ID:', this.#config.json.levels[this.#config.json.level.toUpperCase()])
-        //debug('Logging Level ID:', this.#config.json.levels[level.toUpperCase()])
+        debug('Config Levels:', this.#config.json.levels)
+        debug('Defined Level:', this.#config.json.level)
+        debug('Defined Level ID:', this.#config.json.levels[this.#config.json.level.toUpperCase()])
+        debug('Logging Level ID:', this.#config.json.levels[level.toUpperCase()])
 
-        return (this.#config.json.levels[level.toUpperCase()] >= this.#config.json.levels[this.#config.json.level.toUpperCase()])
+        const result = (this.#config.json.levels[level.toUpperCase()] >= this.#config.json.levels[this.#config.json.level.toUpperCase()])
+        debug('Result = ', result)
+        return result
     }
 
 
     /**
+     * Tracks performance for each of the log levels (info, debug, warn, etc,.)
      * 
-     * @param {*} entry 
-     * @returns 
+     * @param {String} entry 
+     * 
+     * @returns {String} Returns value of performance ( 0.10ms), or undefined.
      */
     #trackPerformance(entry) {
         debug('trackPerformance')
@@ -207,6 +246,9 @@ export class Logish extends EventEmitter {
         return result
     }
 
+    /**
+     * Shows the statistics for the running instance, from all controllers.
+     */
     showStats() {
         this.#controlHandler.showStats()
     }
