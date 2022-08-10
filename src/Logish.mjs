@@ -24,12 +24,6 @@ export class Logish extends EventEmitter {
         this.#setup()
     }
 
-    /**
-     * 
-     * @returns 
-     */
-    getConfig() { return this.#config.getConfig() }
-    getLevels() { return this.#config.getLevels() }
 
     getNamespace() { return this.#namespace }
     setNamespace(value) { this.#namespace = value }

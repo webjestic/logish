@@ -17,7 +17,6 @@ export class Config {
         controllers : []
     }
 
-    #levelsdef = this.#configDefaultSchema.levels
     #json = null
 
     /** Pattern: Singleton */
@@ -34,8 +33,7 @@ export class Config {
     }
     
     getInstance() { return Config.instance }
-    getConfig() { return this.#json }
-    getLevels() { return this.#levelsdef }
+
     get json() { return this.#json }
 
     /**

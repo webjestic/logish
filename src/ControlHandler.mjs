@@ -19,9 +19,9 @@ export class ControlHandler {
         //debug ('controllers %O', controllers)
 
         if (!ControlHandler.instance) {
-            for (let controllerIndex in controllers) {
+            for (let controllerIndex in controllers) 
                 this.#addController(controllers[controllerIndex])
-            }
+            
             ControlHandler.instance = this
         }
         return ControlHandler.instance
@@ -42,20 +42,6 @@ export class ControlHandler {
         //debug('controller %O', controller)
 
         this.#loadControllerClass(controller)
-
-        /*
-        try {
-            const dModule = await import(controller.module)
-            debug ('dModule %O', dModule)
-            debug('ControllerClass %O', typeof dModule[controller.classname])
-            const dObject = new dModule[controller.classname](controller)
-            debug('dObject %O', dObject)
-
-            this.#controllers.push(dObject) 
-        } catch (ex) {
-            throw new Error (ex)
-        }
-        */
     }
 
     /**
@@ -107,16 +93,6 @@ export class ControlHandler {
     entry(logEntry) {
         debug('entry')
         //debug(logEntry)
-
-        /*
-        debug('controllers = %O', this.#controllers)
-        for (let controller of this.#controllers) {
-            debug('controller= %O', controller)
-            if( controller.json.active ) {
-                controller.entry(logEntry)
-            }          
-        }
-        */
     
         // log entries may be added before controllers have finished creating,
         // therefore, wait for pending promises to complete before processing.

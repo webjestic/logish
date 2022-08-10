@@ -12,7 +12,7 @@ const defaultLogishConfig = {
         {
             name: 'console',
             active: true,
-            displayOnlyEnvNamespace: true,
+            displayOnlyEnvNamespace: false,
             displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
             format : '%datetime %level %namespace %entry %performance',
             useColor: true,
@@ -79,3 +79,11 @@ log.debug('entry 3')
 
 log.showStats()
 
+// Register a listener
+log.on('LogEvent', (logEntry) => {
+    
+    console.log('LogEvent', logEntry)
+    
+})
+
+log.debug('entry 4')

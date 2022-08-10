@@ -20,7 +20,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "vitest run",
-    "lint": "eslint . "
+    "lint": "eslint '**/*.mjs' --ignore-pattern node_modules/"
   },
   "engines": {
     "node": ">=10.12.0"

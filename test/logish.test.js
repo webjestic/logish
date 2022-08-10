@@ -3,15 +3,14 @@ import { it, expect, describe } from 'vitest'
 import { Logish } from '../src/Logish.mjs'
 
 var logishConfig = {
-    level : 'info',
-    controllers : []
+    level : 'info'
 }
 
 describe('#1 Logish constructor :', () => {
-    it('Logish.constructor using DEFAULT config and CUSTOM namespace', () => {
-        expect(new Logish('mySpace')).toBeInstanceOf(Logish)
-        expect((new Logish('mySpace')).namespace ).toBe('mySpace')
-        expect((new Logish('mySpace')).config ).toBeDefined()
+    it('Logish.constructor using DEFAULT config', () => {
+        expect(new Logish()).toBeInstanceOf(Logish)
+        expect((new Logish('mySpace')).setNamespace() ).toBe('mySpace')
+        expect((new Logish('mySpace')).getNamespace() ).toBeDefined()
     })
 
     it('#2 Logish.constructor using DEFAULT config and NO namespace', () => {
@@ -20,10 +19,6 @@ describe('#1 Logish constructor :', () => {
 
     it('#3 Logish.constructor using CUSTOM config and NO namespace', () => {
         expect(new Logish(logishConfig)).toBeInstanceOf(Logish)
-    })
-
-    it('#4 Logish.constructor using CUSTOM config and CUSTOM namespace', () => {
-        expect(new Logish(logishConfig, 'mySpace')).toBeInstanceOf(Logish)
     })
 
     it('#5 Logish constructor Throws an Error.', () => {
