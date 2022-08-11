@@ -45,6 +45,8 @@ export class ControlFile extends Controller {
         ]
     }
 
+    #json = {}
+
     constructor(controllerConfig) {
         super(controllerConfig)
         debug('constructor')
@@ -70,11 +72,14 @@ export class ControlFile extends Controller {
         } else {
             // completely assign default values to the configuration. overrides the
             // config assignment in the super.constructor
-            this.json = this.#configDefaultScheme
+            this.#json = this.#configDefaultScheme
             result = true
         }
         return result
     }
+
+    get json() { return this.#json }
+    set json(value) { this.#json = value}
 
     /**
      * 
@@ -135,16 +140,18 @@ export class ControlFile extends Controller {
      */
     #assignConfigValues(controllerConfig) {
         debug('assignConfigValues')
+
+        this.#json = this.#configDefaultScheme
         
         if (controllerConfig.files === undefined) {
             debug('assiging default.files')
             controllerConfig.files = this.#configDefaultScheme.files
         }
 
-        if (controllerConfig.active !== undefined) this.json.active = controllerConfig.active
-        else this.json.active = this.#configDefaultScheme.active
+        if (controllerConfig.active !== undefined) this.#json.active = controllerConfig.active
+        else this.#json.active = this.#configDefaultScheme.active
 
-        debug('json %O', this.json)
+        debug('json %O', this.#json)
 
         // if property exists then assign the value - otherwise assign the default value
         let idx = 0
@@ -153,34 +160,34 @@ export class ControlFile extends Controller {
 
             debug('Title A', this.#configDefaultScheme.files[idx].title)
 
-            if (fileController.title !== undefined) this.json.files[idx].title = fileController.title
-            else this.json.files[idx].title = this.#configDefaultScheme.files[idx].title
+            if (fileController.title !== undefined) this.#json.files[idx].title = fileController.title
+            else this.#json.files[idx].title = this.#configDefaultScheme.files[idx].title
 
-            if (fileController.active !== undefined) this.json.files[idx].active = fileController.active
-            else this.json.files[idx].active = fileController.active
+            if (fileController.active !== undefined) this.#json.files[idx].active = fileController.active
+            else this.#json.files[idx].active = fileController.active
 
-            if (fileController.writeLevels !== undefined) this.json.files[idx].writeLevels = fileController.writeLevels.map(lvl => lvl.toLowerCase())
-            else this.json.files[idx].writeLevels = this.#configDefaultScheme.files[idx].writeLevels
+            if (fileController.writeLevels !== undefined) this.#json.files[idx].writeLevels = fileController.writeLevels.map(lvl => lvl.toLowerCase())
+            else this.#json.files[idx].writeLevels = this.#configDefaultScheme.files[idx].writeLevels
 
-            if (fileController.format !== undefined) this.json.files[idx].format = fileController.format
-            else this.json.files[idx].format = this.#configDefaultScheme.files[idx].format
+            if (fileController.format !== undefined) this.#json.files[idx].format = fileController.format
+            else this.#json.files[idx].format = this.#configDefaultScheme.files[idx].format
 
-            if (fileController.filename !== undefined) this.json.files[idx].filename = fileController.filename
-            else this.json.files[idx].filename = this.#configDefaultScheme.files[idx].filename
+            if (fileController.filename !== undefined) this.#json.files[idx].filename = fileController.filename
+            else this.#json.files[idx].filename = this.#configDefaultScheme.files[idx].filename
 
-            if (fileController.maxsize_in_mb !== undefined) this.json.files[idx].maxsize_in_mb = fileController.maxsize_in_mb
-            else this.json.files[idx].maxsize_in_mb = this.#configDefaultScheme.files[idx].maxsize_in_mb
+            if (fileController.maxsize_in_mb !== undefined) this.#json.files[idx].maxsize_in_mb = fileController.maxsize_in_mb
+            else this.#json.files[idx].maxsize_in_mb = this.#configDefaultScheme.files[idx].maxsize_in_mb
 
-            if (fileController.backups_kept !== undefined) this.json.files[idx].backups_kept = fileController.backups_kept
-            else this.json.files[idx].backups_kept = this.#configDefaultScheme.files[idx].backups_kept
+            if (fileController.backups_kept !== undefined) this.#json.files[idx].backups_kept = fileController.backups_kept
+            else this.#json.files[idx].backups_kept = this.#configDefaultScheme.files[idx].backups_kept
 
-            if (fileController.gzip_backups !== undefined) this.json.files[idx].gzip_backups = fileController.gzip_backups
-            else this.json.files[idx].gzip_backups = this.#configDefaultScheme.files[idx].gzip_backups
+            if (fileController.gzip_backups !== undefined) this.#json.files[idx].gzip_backups = fileController.gzip_backups
+            else this.#json.files[idx].gzip_backups = this.#configDefaultScheme.files[idx].gzip_backups
 
-            debug('Title B', this.json.files[idx].title)
+            debug('Title B', this.#json.files[idx].title)
 
             // update fileController.filename with proper, full path.
-            this.#prepFilename(fileController)
+            this.#prepFilename(fileController, idx)
             // create log folder if needed
             this.#mkdir(fileController)
 
@@ -197,8 +204,8 @@ export class ControlFile extends Controller {
         super.entry(logEntry)
         //debug('entry')
 
-        //debug(this.json.files)
-        for (let fileController of this.json.files) {
+        //debug(this.#json.files)
+        for (let fileController of this.#json.files) {
             //debug('fileController %O', fileController)
             if (fileController.active === true) {
                 if (fileController.writeLevels.indexOf(logEntry.level.toLowerCase()) > -1)
@@ -242,7 +249,7 @@ export class ControlFile extends Controller {
      * 
      * @param {*} controller 
      */
-    #prepFilename(controller) {
+    #prepFilename(controller, idx) {
         if (typeof controller.filename !== 'string' || controller.filename.length === 0) 
             throw new Error(`Invalid filename: ${controller.filename}`)
     
@@ -250,12 +257,12 @@ export class ControlFile extends Controller {
             throw new Error(`Filename is a directory: ${controller.filename}`)
 
         if ((!controller.filename.startsWith(path.sep) && !controller.filename.startsWith('.'))) 
-            controller.filename = process.cwd() + path.sep + controller.filename
+            this.#json.files[idx].filename = (process.cwd() + path.sep + controller.filename)
         
         // handle the ~ (tilde) symbol, translating it to the OS Home Directory
-        controller.filename = controller.filename.replace(new RegExp(`^~(?=${path.sep}.+)`), os.homedir()) 
-        controller.filename =  path.normalize(controller.filename)  
-        controller.filename =  path.resolve(controller.filename)  
+        this.#json.files[idx].filename = this.#json.files[idx].filename.replace(new RegExp(`^~(?=${path.sep}.+)`), os.homedir()) 
+        this.#json.files[idx].filename =  path.normalize(this.#json.files[idx].filename)  
+        this.#json.files[idx].filename =  path.resolve(this.#json.files[idx].filename)  
     }
 
     /**
