@@ -6,7 +6,7 @@ import { exampleB } from './exampleB.mjs'
 
 
 const defaultLogishConfig = {
-    level : 'trace',
+    level : 'warn',
     performanceTime : true,
     controllers : [
         {
