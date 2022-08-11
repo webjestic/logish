@@ -1,0 +1,33 @@
+{
+  "name": "logish",
+  "version": "1.0.0",
+  "description": "Lightweight logging and debug-logging utility for Node.js.",
+  "author": "Michael N (webjestic)",
+  "license": "MIT",
+  "keywords": [
+    "logger",
+    "logging",
+    "log",
+    "debug",
+    "debugger"
+  ],
+  "type": "module",
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "test": "vitest run",
+    "lint": "eslint '**/*.mjs' --ignore-pattern node_modules/"
+  },
+  "engines": {
+    "node": ">=10.12.0"
+  },
+  "devDependencies": {
+    "debug": "^4.3.4",
+    "eslint": "^8.20.0",
+    "vitest": "^0.18.1"
+  }
+}
