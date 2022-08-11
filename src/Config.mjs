@@ -119,6 +119,7 @@ export class Config {
         }
         
         // assign default module and class name for controller CONSOLE and FILE
+        /*
         for (let customController of customConfig.controllers) {
             if (customController.name !== undefined && typeof customController.name === 'string') {
                 if (customController.name.toLowerCase() === 'console') {
@@ -132,6 +133,7 @@ export class Config {
             } else
                 throw new Error ('Config.controllers[index].name is required.')
         }
+        */
 
         debug ('config %O', this.json)
     }

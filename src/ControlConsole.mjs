@@ -23,6 +23,8 @@ export class ControlConsole extends Controller {
         }
     }
 
+    #json = {}
+
     /**
      * 
      * @param {*} controllerConfig 
@@ -32,6 +34,9 @@ export class ControlConsole extends Controller {
         debug('constructor')
         this.configure(controllerConfig)            
     }
+
+    get json() { return this.#json }
+    set json(value) { this.#json = value}
 
     /**
      * 
@@ -110,23 +115,23 @@ export class ControlConsole extends Controller {
         debug('assignConfigValues')
 
         // if property exists then assign the value - otherwise assign the default value
-        if (controllerConfig.active !== undefined) this.json.active = controllerConfig.active
-        else this.json.active = this.#configDefaultScheme.active
+        if (controllerConfig.active !== undefined) this.#json.active = controllerConfig.active
+        else this.#json.active = this.#configDefaultScheme.active
 
-        if (controllerConfig.displayLevels !== undefined) this.json.displayLevels = controllerConfig.displayLevels
-        else this.json.displayLevels = this.#configDefaultScheme.displayLevels
+        if (controllerConfig.displayLevels !== undefined) this.#json.displayLevels = controllerConfig.displayLevels
+        else this.#json.displayLevels = this.#configDefaultScheme.displayLevels
 
-        if (controllerConfig.format !== undefined) this.json.format = controllerConfig.format
-        else this.json.format = this.#configDefaultScheme.format
+        if (controllerConfig.format !== undefined) this.#json.format = controllerConfig.format
+        else this.#json.format = this.#configDefaultScheme.format
         
-        if (controllerConfig.useColor !== undefined) this.json.useColor = controllerConfig.useColor
-        else this.json.useColor = this.#configDefaultScheme.useColor
+        if (controllerConfig.useColor !== undefined) this.#json.useColor = controllerConfig.useColor
+        else this.#json.useColor = this.#configDefaultScheme.useColor
 
-        if (controllerConfig.displayOnlyEnvNamespace !== undefined) this.json.displayOnlyEnvNamespace = controllerConfig.displayOnlyEnvNamespace
-        else this.json.displayOnlyEnvNamespace = this.#configDefaultScheme.displayOnlyEnvNamespace
+        if (controllerConfig.displayOnlyEnvNamespace !== undefined) this.#json.displayOnlyEnvNamespace = controllerConfig.displayOnlyEnvNamespace
+        else this.#json.displayOnlyEnvNamespace = this.#configDefaultScheme.displayOnlyEnvNamespace
 
-        if (controllerConfig.colors !== undefined) this.json.colors = controllerConfig.colors
-        else this.json.colors = this.#configDefaultScheme.colors
+        if (controllerConfig.colors !== undefined) this.#json.colors = controllerConfig.colors
+        else this.#json.colors = this.#configDefaultScheme.colors
     }
         
 
