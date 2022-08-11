@@ -8,8 +8,7 @@
     "logger",
     "logging",
     "log",
-    "debug",
-    "debugger"
+    "debugging"
   ],
   "type": "module",
   "files": [
@@ -20,7 +19,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "vitest run",
-    "lint": "eslint '**/*.mjs' --ignore-pattern node_modules/"
+    "lint": "eslint '**/*.mjs' --ignore-pattern node_modules/",
+    "start": "node src/index.js"
   },
   "engines": {
     "node": ">=10.12.0"
@@ -29,5 +29,13 @@
     "debug": "^4.3.4",
     "eslint": "^8.20.0",
     "vitest": "^0.18.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webjestic/logish"
+  },
+  "bugs": {
+    "url": "https://github.com/webjestic/logish/issues"
+  },
+  "homepage": "https://github.com/webjestic/logish#readme"
 }
