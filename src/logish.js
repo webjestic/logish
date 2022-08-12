@@ -1,10 +1,9 @@
 
-import Debug from 'debug'
-const debug = Debug('logish:class')
+
 import { EventEmitter } from 'events'
-import { Config } from './Config.mjs'
-import { LogEntry } from './LogEntry.mjs'
-import { ControlHandler } from './ControlHandler.mjs'
+import { Config } from './config.js'
+import { LogEntry } from './log_entry.js'
+import { ControlHandler } from './control_handler.js'
 
 import { performance } from 'perf_hooks' // https://nodejs.org/api/perf_hooks.html#performancegetentries
 
@@ -35,7 +34,6 @@ export class Logish extends EventEmitter {
      */
     constructor(configJSON) {
         super()
-        debug('constructor')
         
         this.#config = new Config(configJSON) 
         this.#setup()
@@ -53,7 +51,6 @@ export class Logish extends EventEmitter {
      * @access Protected
      */
     #setup() {
-        debug('setup')
         this.#setupEnv()
         this.#setupControllers()
         this.#setupLevelMethods()
@@ -65,7 +62,6 @@ export class Logish extends EventEmitter {
      * @access Protected
      */
     #setupControllers() {
-        debug('setupControls')
         this.#controlHandler = new ControlHandler(this.#config.json.controllers)
     }
 
@@ -75,7 +71,6 @@ export class Logish extends EventEmitter {
      * @access Protected
      */
     #setupLevelMethods() {
-        debug('setupLevelMethods')
         const levels = this.#config.json.levels
         Object.keys(levels).forEach(method => {
             this[method.toLowerCase()] = this.entry.bind(this, method.toLowerCase())
@@ -99,17 +94,14 @@ export class Logish extends EventEmitter {
      * @returns {boolean} true if ran, false if not ran
      */
     entry(...args) {
-        debug('entry')
-        debug('entry args %O', args)
-        //debug('entry arguments %O', arguments)
+
 
         // terminte the process if a valid log level is not being used.
         if (this.#config.json.levels[args[0].toUpperCase()] === undefined)
             throw new Error('Invalid log level method alias used. Try info(), debug(), or any valid log level.')
-        if (!this.#allowLevelEntry(args[0])) {
-            debug('returning false')
+        if (!this.#allowLevelEntry(args[0])) 
             return false
-        }
+        
 
         // build the logEntry object based on all entry arguments
         let callback = undefined
@@ -168,9 +160,7 @@ export class Logish extends EventEmitter {
                 lenv = process.env[key]
         })
 
-        debug('env %O', lenv)
         if (lenv !== undefined) this.#env = lenv.split(',')
-        debug('this.#env %o', this.#env)
     }
 
     /**
@@ -182,15 +172,9 @@ export class Logish extends EventEmitter {
      * @returns true if log entry level is less-than-equal-to the logish config.level.
      */
     #allowLevelEntry(level) {
-        debug('allowLevelEntry')
-
-        debug('Config Levels:', this.#config.json.levels)
-        debug('Defined Level:', this.#config.json.level)
-        debug('Defined Level ID:', this.#config.json.levels[this.#config.json.level.toUpperCase()])
-        debug('Logging Level ID:', this.#config.json.levels[level.toUpperCase()])
 
         const result = (this.#config.json.levels[level.toUpperCase()] >= this.#config.json.levels[this.#config.json.level.toUpperCase()])
-        debug('Result = ', result)
+
         return result
     }
 
@@ -203,7 +187,6 @@ export class Logish extends EventEmitter {
      * @returns {String} Returns value of performance ( 0.10ms), or undefined.
      */
     #trackPerformance(entry) {
-        debug('trackPerformance')
         let result = undefined
         if (this.#config.json.performanceTime !== undefined && this.#config.json.performanceTime === true) {
 
@@ -242,7 +225,6 @@ export class Logish extends EventEmitter {
             }
             performance.mark(entry.level)
         }
-        debug('performance %o', result)
         return result
     }
 

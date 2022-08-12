@@ -1,6 +1,5 @@
 
-import Debug from 'debug'
-const debug = Debug('logish:logentry')
+
 import os from 'os'
 
 /**
@@ -30,9 +29,6 @@ export class LogEntry {
      * @param {json} entry Simple json containing basic starter information for a log entry
      */
     constructor(entry) {
-        debug('constructor')
-
-        debug('constructor-entry %O', entry)
 
         const dtime = Date.now()
         this.#json.datetime.timestamp = dtime
@@ -50,8 +46,7 @@ export class LogEntry {
      * @param {json} entry Simple json containing basic starter information for a log entry
      */
     #updateEntry(entry) {
-        debug('updateEntry')
-        //debug('entry %O', entry)
+
         if (entry.level !== undefined && typeof entry.level === 'string')
             this.#json.level = entry.level
 

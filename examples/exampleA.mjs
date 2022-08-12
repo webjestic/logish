@@ -1,5 +1,5 @@
 
-import Logish from '../src/index.js'
+import { Logish } from './../src/logish.js'
 
 
 export function exampleA () {
