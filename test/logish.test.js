@@ -1,6 +1,6 @@
 
 import { it, expect, describe } from 'vitest'
-import { Logish } from '../src/Logish.mjs'
+import { Logish } from '../src/logish'
 
 var logishConfig = {
     level : 'warn'

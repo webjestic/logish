@@ -1,8 +1,4 @@
 
-import Debug from 'debug'
-const debug = Debug('logish:config')
-
-
 
 /**
  * Responsible for ensuring the integrity of the logish configuration.
@@ -21,7 +17,6 @@ export class Config {
 
     /** Pattern: Singleton */
     constructor(configJSON) {
-        debug('constructor')
 
         if (!Config.instance) {
             if (!this.configure(configJSON))
@@ -42,7 +37,6 @@ export class Config {
      * @returns boolean
      */
     configure(customConfig) {
-        debug('configure')
         //debug('configJSON %O', configJSON)
 
         let result = false
@@ -67,7 +61,6 @@ export class Config {
      * @returns boolean
      */
     validate(customConfig) {
-        debug('validate')
 
         // customConfig is validated to be typeof object by this.configure at this point
 
@@ -102,7 +95,6 @@ export class Config {
      * @param {*} customConfig 
      */
     #assignConfigValues(customConfig) {
-        debug('assignConfigValues')
 
         if (customConfig.level !== undefined) this.json.level = customConfig.level
         else this.json.level = this.#configDefaultSchema.level
@@ -118,23 +110,5 @@ export class Config {
             customConfig.controllers.push( { name: 'file', files: [] } )
         }
         
-        // assign default module and class name for controller CONSOLE and FILE
-        /*
-        for (let customController of customConfig.controllers) {
-            if (customController.name !== undefined && typeof customController.name === 'string') {
-                if (customController.name.toLowerCase() === 'console') {
-                    customController.classname = 'ControlConsole'
-                    customController.module = './controlConsole.mjs'
-                }
-                if (customController.name.toLowerCase() === 'file') {
-                    customController.classname = 'ControlFile'
-                    customController.module = './controlFile.mjs' 
-                }
-            } else
-                throw new Error ('Config.controllers[index].name is required.')
-        }
-        */
-
-        debug ('config %O', this.json)
     }
 }

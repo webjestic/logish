@@ -1,7 +1,6 @@
-import Debug from 'debug'
+
 import util from 'util'
-const debug = Debug('logish:console')
-import { Controller } from './Controller.mjs'
+import { Controller } from './controller.js'
 
 
 export class ControlConsole extends Controller {
@@ -31,7 +30,6 @@ export class ControlConsole extends Controller {
      */
     constructor(controllerConfig) {
         super(controllerConfig)
-        debug('constructor')
         this.configure(controllerConfig)            
     }
 
@@ -59,7 +57,6 @@ export class ControlConsole extends Controller {
             result = true
         }
 
-        debug('console config: %O', this.json)
         return result
     }
 
@@ -69,7 +66,6 @@ export class ControlConsole extends Controller {
      * @param {*} controllerConfig 
      */
     validate(controllerConfig) {
-        debug('validate')
 
         // controllerConfig is validated to be typeof object by this.configure at this point
 
@@ -77,33 +73,23 @@ export class ControlConsole extends Controller {
         if (controllerConfig.active !== undefined && typeof controllerConfig.active !==  'boolean')
             throw new Error ('Provided controller.active is not typeof "boolean".')
 
-        debug('active')
         if (controllerConfig.displayLevels !== undefined && typeof controllerConfig.displayLevels === 'object') {
-            debug('displayLevels')
-            if (!Array.isArray(controllerConfig.displayLevels)) {
-                debug('displayLevels not array')
+            if (!Array.isArray(controllerConfig.displayLevels)) 
                 throw new Error ('Provided controller.displayLevels is not of typeof "array".')
-            }
         }
 
-        debug('format')
         if (controllerConfig.format !== undefined && typeof controllerConfig.format !== 'string') 
             throw new Error ('Provided controller.format is not typeof "string".')
 
-        debug('useColor')
         if (controllerConfig.useColor !== undefined && typeof controllerConfig.useColor !== 'boolean') 
             throw new Error ('Provided controller.useColor is not typeof "boolean".')
 
-        debug('displayOnlyEnvNamespace')
         if (controllerConfig.displayOnlyEnvNamespace !== undefined && typeof controllerConfig.displayOnlyEnvNamespace !== 'boolean') 
             throw new Error ('Provided controller.displayOnlyEnvNamespace is not typeof "boolean".')
 
-        debug('colors')
         if (controllerConfig.colors !== undefined && typeof controllerConfig.colors !== 'object') 
             throw new Error ('Provided controller.colors is not of typeof "object".')
-            
 
-        debug('end validate')
         return true
     }
 
@@ -112,7 +98,6 @@ export class ControlConsole extends Controller {
      * @param {*} controllerConfig 
      */
     #assignConfigValues(controllerConfig) {
-        debug('assignConfigValues')
 
         // if property exists then assign the value - otherwise assign the default value
         if (controllerConfig.active !== undefined) this.#json.active = controllerConfig.active
@@ -140,7 +125,6 @@ export class ControlConsole extends Controller {
      * @param {object} logEntry 
      */
     entry(logEntry) {
-        debug('entry')
 
         // if log level is configured for display
         if (this.json.displayLevels.indexOf(logEntry.level) <= -1) return false 
@@ -165,16 +149,12 @@ export class ControlConsole extends Controller {
 
         if (logEntry.envVars !== undefined && logEntry.namespace !== undefined) {
             if (this.json.displayOnlyEnvNamespace === true) {
-                debug('restricting namespace rule')
 
                 // if logEntry.namespace is NOT found in logEntry.envVars,
                 // then restrict it by assigning TRUE
                 const namespaceWildcard = logEntry.namespace.substring(0, logEntry.namespace.indexOf(':')+1) + '*'
-                debug ('namespaceWildcard %o', namespaceWildcard)
-                if (logEntry.envVars.indexOf(logEntry.namespace) > -1 || logEntry.envVars.indexOf(namespaceWildcard) > -1) {
-                    debug ('namespaceRestricted = TRUE')
+                if (logEntry.envVars.indexOf(logEntry.namespace) > -1 || logEntry.envVars.indexOf(namespaceWildcard) > -1) 
                     result = true
-                }
             }
         }
         return result
@@ -185,13 +165,10 @@ export class ControlConsole extends Controller {
      * @param {*} logEntry 
      */
     writeToConsole(logEntry) {
-        debug('writeToConsole')
 
         if (logEntry.message !== undefined) {
 
-            debug ('logEntry %O', logEntry)
             let entry = this.formatEntry(logEntry)
-            debug('entry %O', entry)
 
             if (logEntry.data) {
                 // require('util').inspect.defaultOptions.depth = 10
@@ -212,13 +189,11 @@ export class ControlConsole extends Controller {
      * @param {*} logEntry 
      */
     formatEntry(logEntry) {
-        debug('formatEntry')
 
         
         let returnEntry = super.formatEntry(logEntry, this.json.format)
         logEntry.entries.push( { 'console': returnEntry } )
 
-        debug('formatJson %o', this.json.format)
         if (this.json.useColor === true) {
 
             let formatStr = this.json.format
@@ -232,7 +207,6 @@ export class ControlConsole extends Controller {
             if (logEntry.namespace !== undefined) formatStr = formatStr.replace('%namespace', `${underscore}%namespace${resetColor}`)
             if (logEntry.datetime.dateString !== undefined) formatStr = formatStr.replace('%datetime', `${dimColor}%datetime${resetColor}`)
 
-            debug('formatStr: %o', formatStr)
             returnEntry = super.formatEntry(logEntry, formatStr)
         }
 

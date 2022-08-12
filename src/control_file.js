@@ -1,6 +1,6 @@
-import Debug from 'debug'
-const debug = Debug('logish:file')
-import { Controller } from './Controller.mjs'
+
+
+import { Controller } from './controller.js'
 import  os  from 'os'
 import path from 'path'
 import fs from 'fs'
@@ -49,10 +49,8 @@ export class ControlFile extends Controller {
 
     constructor(controllerConfig) {
         super(controllerConfig)
-        debug('constructor')
 
         this.configure(controllerConfig)
-        debug('end constructor')
     }
 
     /**
@@ -65,7 +63,6 @@ export class ControlFile extends Controller {
         let result = false
         if (controllerConfig !== undefined && typeof controllerConfig === 'object') {
             if (this.validate(controllerConfig)) {
-                debug('validate pass')
                 this.#assignConfigValues(controllerConfig)
                 result = true
             }
@@ -86,7 +83,6 @@ export class ControlFile extends Controller {
      * @param {*} controllerConfig 
      */
     validate(controllerConfig) {
-        debug('validate')
 
         // controllerConfig is validated to be typeof object by this.configure at this point
 
@@ -139,26 +135,19 @@ export class ControlFile extends Controller {
      * @param {*} controllerConfig 
      */
     #assignConfigValues(controllerConfig) {
-        debug('assignConfigValues')
 
         this.#json = this.#configDefaultScheme
         
-        if (controllerConfig.files === undefined) {
-            debug('assiging default.files')
+        if (controllerConfig.files === undefined) 
             controllerConfig.files = this.#configDefaultScheme.files
-        }
 
         if (controllerConfig.active !== undefined) this.#json.active = controllerConfig.active
         else this.#json.active = this.#configDefaultScheme.active
-
-        debug('json %O', this.#json)
 
         // if property exists then assign the value - otherwise assign the default value
         let idx = 0
         
         for (let fileController of controllerConfig.files) {
-
-            debug('Title A', this.#configDefaultScheme.files[idx].title)
 
             if (fileController.title !== undefined) this.#json.files[idx].title = fileController.title
             else this.#json.files[idx].title = this.#configDefaultScheme.files[idx].title
@@ -183,8 +172,6 @@ export class ControlFile extends Controller {
 
             if (fileController.gzip_backups !== undefined) this.#json.files[idx].gzip_backups = fileController.gzip_backups
             else this.#json.files[idx].gzip_backups = this.#configDefaultScheme.files[idx].gzip_backups
-
-            debug('Title B', this.#json.files[idx].title)
 
             // update fileController.filename with proper, full path.
             this.#prepFilename(fileController, idx)
