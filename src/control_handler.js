@@ -1,8 +1,6 @@
 
-import Debug from 'debug'
-const debug = Debug('logish:controlHandler')
-import { ControlFile } from './ControlFile.mjs'
-import { ControlConsole } from './ControlConsole.mjs'
+import { ControlFile } from './control_file.js'
+import { ControlConsole } from './control_console.js'
 
 /**
  * 
@@ -20,7 +18,6 @@ export class ControlHandler {
      * @returns instance
      */
     constructor(controllers) {
-        debug('constructor')
         //debug ('controllers %O', controllers)
 
         if (!ControlHandler.instance) {
@@ -43,7 +40,6 @@ export class ControlHandler {
      * @param {object} controller - The json conifguration of a controller.
      */
     async #addController(controller) {
-        debug('addController')
         //debug('controller %O', controller)
 
         //this.#loadControllerClass(controller)
@@ -62,7 +58,6 @@ export class ControlHandler {
      * @param {object} logEntry 
      */
     entry(logEntry) {
-        debug('entry')
         //debug(logEntry)
     
         // log entries may be added before controllers have finished creating,

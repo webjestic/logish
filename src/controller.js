@@ -1,8 +1,3 @@
-import Debug from 'debug'
-
-const debug = Debug('logish:controller')
-
-
 
 /**
  * 
@@ -29,7 +24,6 @@ export class Controller {
      * @param {*} controllerConfig 
      */
     constructor(controllerConfig) {
-        debug('constructor')
         this.#json = controllerConfig
     }
 
@@ -42,7 +36,6 @@ export class Controller {
      * @param {object} logEntry 
      */
     entry(logEntry) {
-        debug('entry')
         this.#stats.total = this.#stats.total + 1
         switch (logEntry.level.toLowerCase()) {
         case 'trace': 
@@ -75,7 +68,6 @@ export class Controller {
      * @returns {String} transfored format string with values
      */
     formatEntry(logEntry, formatStr) {
-        debug('formatEntry')
         
         if (logEntry.datetime.dateString !== undefined) formatStr = formatStr.replace('%datetime', logEntry.datetime.dateString)
         else formatStr = formatStr.replace('%datetime', '')
