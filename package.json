@@ -14,7 +14,8 @@
   "files": [
     "src",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "main": "src/logish.js",
   "scripts": {
