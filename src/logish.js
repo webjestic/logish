@@ -108,8 +108,10 @@ export class Logish extends EventEmitter {
         let dataIndex = 0
         let entry = { 
             level: args[0],
-            message: args[1]
+            message : ''
+            //message: args[1]
         }
+        /*
         if (arguments.length > 2) {
             for (let i = 2; i <= arguments.length-1; i++) {
                 switch (typeof arguments[i]) {
@@ -130,14 +132,32 @@ export class Logish extends EventEmitter {
                 }
             }
         }
+        v1.0.4
+        */
+        for (let i = 1; i <= arguments.length-1; i++) {
+            switch (typeof arguments[i]) {
+            case 'function' : 
+                callback = arguments[i]
+                break
+            case 'object' : 
+                if (Array.isArray(arguments[i]))
+                    entry.message += ' [ ' + arguments[i] + ' ]'
+                else {
+                    if (entry.data === undefined) entry.data = {}
+                    entry.data[dataIndex] = arguments[i]
+                    dataIndex++
+                }
+                break
+            default :
+                entry.message += ' ' + arguments[i]
+            }
+        }
 
         entry.envVars = this.#env
         entry.performance = this.#trackPerformance(entry)
         entry.namespace = this.#namespace
 
         // pass the log entry to the controllers for porcessing and run the callback
-        //debug('entry %O', entry)
-        
         var logEntry = new LogEntry(entry)
         //debug('logEntry.json %O', logEntry.json)
         this.#controlHandler.entry(logEntry.json)

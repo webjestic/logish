@@ -62,15 +62,23 @@ const defaultLogishConfig = {
     ]
 }
 
+
 const logishConfig = defaultLogishConfig
 
 const log = new Logish(logishConfig)
 log.setNamespace('example:index')
 console.log(log.trace('Tracing call'))
 
-log.info('Getting started.')
 exampleA()
 exampleB()
+
+
+log.warn(logishConfig)
+let obj = { oxy: 'meat', cotten: 'beef'}
+log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
+
+
+log.info('Getting started.')
 
 log.debug('entry 1')
 log.debug('entry 2')
@@ -84,3 +92,4 @@ log.on('LogEvent', (logEntry) => {
 })
 
 log.debug('entry 4')
+
