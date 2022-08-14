@@ -73,10 +73,12 @@ export class ControlHandler {
      * Shows the statistics for the running instance, from all controllers.
      */
     showStats() {
+        let result = []
         for (let controller of this.#controllers) {
             if( controller.json.active ) 
-                controller.showStats()
+                result.push( controller.showStats() )
         }
+        return result
     }
 
 }
