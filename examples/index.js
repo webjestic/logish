@@ -84,7 +84,9 @@ log.debug('entry 1')
 log.debug('entry 2')
 console.log(log.debug('entry 3'))
 
-log.showStats()
+const logishStats = log.showStats()
+console.log ('logish stats', logishStats)
+log.info(logishStats)
 
 // Register a listener
 log.on('LogEvent', (logEntry) => {
