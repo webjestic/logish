@@ -76,13 +76,18 @@ const defaultLogishConfig = {
 Register an event function to execute special instructions on every log entry. 
 
 ```javascript
-// load Logish object without defining a namespace.
+
+// import ES6
 import { Logish } from 'logish'
+
+// load Logish object custom config values.
 const log = new Logish(logishConfig)
+
 // or use all defaults by passing no args
 const logish = new Logish()
 
-log.setNamespace('example:index')
+// set namespace for module
+log.setNamespace('mod:index')
 
 // Register a listener - listens for and triggers on a log event.
 log.on('LogEvent', (logEntry) => {
