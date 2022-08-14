@@ -252,6 +252,6 @@ export class Logish extends EventEmitter {
      * Shows the statistics for the running instance, from all controllers.
      */
     showStats() {
-        this.#controlHandler.showStats()
+        return this.#controlHandler.showStats()
     }
 }

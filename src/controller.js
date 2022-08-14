@@ -101,5 +101,7 @@ export class Controller {
      */
     showStats() {
         console.log(`logish ${this.#json.name} %o`, this.#stats)
+        this.#stats.controller = this.#json.name
+        return (this.#stats)
     }
 }
