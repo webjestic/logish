@@ -24,7 +24,7 @@
     "start": "node src/logish.js"
   },
   "engines": {
-    "node": ">=10.12.0"
+    "node": ">=16.0.0"
   },
   "devDependencies": {
     "eslint": "^8.20.0",

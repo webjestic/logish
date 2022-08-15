@@ -1,5 +1,10 @@
 # Logish
 
+[![CodeQL](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml)
+
+- **Node Version** *Greater Than or Equal To* `node 16`
+- ES6 - Bite the bullet and transform commonJS to ES6
+
 **Logish** is designed to be lightweight, simple and configurable. 
 
 Logish is an EventEmitter logging object that triggers a LogEvent on an entry, allowing for customized handling. 
@@ -14,11 +19,6 @@ developed in an app for centralized logging AND app debugging. Thinking of datad
 This should be designed through the log.on() log event EventEmitter and a Logish production configuration. Examples and
 documentation to come. Any Logish speed improvements are welcome.
 
-## Requirements & Suggestions
-
-- ES6 - Bite the bullet and transform commonJS to ES6
-- Greater than `node 10.12.0`
-- - recursive log folder creation not supported below this
 
 ```bash
 npm i logish
@@ -151,7 +151,7 @@ log.trace('END constructor()')
 // output will show time difference between trace calls IF "performanceTime : true"
 ```
 
-## LOGISH Environment Variables
+## LOGISH Process Variables
 Run with command line environment variables.
 ```bash
 LOGISH=index,mod:* node index.js
