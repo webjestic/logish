@@ -5,6 +5,9 @@
   "author": "Michael N (webjestic)",
   "license": "MIT",
   "keywords": [
+    "nodejs",
+    "es6",
+    "log",
     "logger",
     "logging",
     "log",
