@@ -1,6 +1,6 @@
 {
   "name": "logish",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Lightweight logging and debug-logging utility for Node.js.",
   "author": "Michael N (webjestic)",
   "license": "MIT",
