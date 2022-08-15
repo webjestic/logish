@@ -22,7 +22,7 @@
   ],
   "main": "src/logish.js",
   "scripts": {
-    "test": "vitest run",
+    "test": "tap --cov --reporter=classic",
     "lint": "eslint '**/*.mjs' --ignore-pattern node_modules/",
     "start": "node src/logish.js"
   },
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "eslint": "^8.20.0",
-    "vitest": "^0.21.1"
+    "tap": "^16.3.0"
   },
   "repository": {
     "type": "git",
