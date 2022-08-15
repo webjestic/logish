@@ -7,6 +7,19 @@ Designed with LogEvent in mind, the intention was to allow developers to hook in
 messages to a centralized location (such as a database) or specifically route error and fatal log events to
 monitoring or alerting services such as Slack, Discord, or PagerDuty.
 
+I'm an experienced developer, with DevOps and Operations SRE experience. The purpose of this project is to create a logging
+system that maintains small log files in a pod (or absolutly no logs in serverless functions), intended to be configured and
+developed in an app for centralized logging AND app debugging. Thinking of datadog, elastic, cloudwatch or other implementations.
+
+This should be designed through the log.on() log event EventEmitter and a Logish production configuration. Examples and
+documentation to come. Any Logish speed improvements are welcome.
+
+## Requirements & Suggestions
+
+- ES6 - Bite the bullet and transform commonJS to ES6
+- Greater than `node 10.12.0`
+- - recursive log folder creation not supported below this
+
 ```bash
 npm i logish
 ```
@@ -155,10 +168,28 @@ file2.js log.setNamespace('mod:file2')
 
 ## Levels
 
-- TRACE
-- DEBUG
-- INFO
-- WARN
-- ERROR
-- FATAL
+Introducing standard logging levels, but not necessarily limited to. Give me a reason to extend this...
 
+- TRACE - Intended for code tracing, not stack tracing. (function start & function end as an example)
+- DEBUG - Always need to examine values.
+- INFO - Standard entry.
+- WARN - Something is up, but not going to interupt flow.
+- ERROR - Something happend and it will most likly screw something else up.
+- FATAL - Something happened, and we need to alert the admins and shut down.
+
+## Contributing
+
+Always welcome people willing to contribute. There is so much to be contributed to any project and should you
+choose to controbute to this project, that would be amazing. We do adhere to a (code of condeuct) and we do
+implement a workflow process.
+
+### Changelog Entries
+
+- fix: Indciates PR reflects a bug fix (including inline spelling corrections).
+- feature: Indicates RP reflects a new feature
+- chore: Indicates PR reflects a chore (such as package version increment, code cleaning, or doc cleaening)
+- refactor: Indicates PR reflects a better implementation, which coes not change functional outcome
+- type: Indicates PR reflects an actual `type` change (such as class to interface)
+- ci: Indicates PR is a foundational devops (continious intergration) change
+- docs: Indicates PR reflects documentation updatesd
+- test: Indicartes PR reflects test enhancements, which may be fixes or features
