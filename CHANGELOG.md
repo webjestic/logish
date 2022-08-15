@@ -3,6 +3,7 @@
 ### v1.0.7
 - [docs: updates to README.md](https://github.com/webjestic/logish/pull/28)
 - [ci: added CodeQL workflow.](https://github.com/webjestic/logish/pull/29)
+- [chore: node requirement updates](https://github.com/webjestic/logish/pull/31)
 ### v1.0.6
 - [fix: console writing showStats to console without option](https://github.com/webjestic/logish/pull/26)
 ### v1.0.5
