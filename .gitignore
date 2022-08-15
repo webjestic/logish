@@ -11,6 +11,7 @@ yarn-error.log
 .vscode/
 .vscode
 MYNOTES.md
+.nyc_output
 
 # lockfiles
 yarn.lock
