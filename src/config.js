@@ -31,6 +31,9 @@ export class Config {
 
     get json() { return this.#json }
 
+    getLevel() { return this.#json.level }
+    setLevel(value) { this.#json.level = value  }
+
     /**
      * 
      * @param {object} configJSON 
