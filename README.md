@@ -4,7 +4,7 @@
 [![Node.js CI](https://github.com/webjestic/logish/actions/workflows/node-audit.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/node-audit.yml)
 
 - **Node Version** *Greater Than or Equal To* `node 16`
-- ES6 - Bite the bullet and transform commonJS to ES6
+
 
 **Logish** is designed to be lightweight, simple and configurable. 
 
