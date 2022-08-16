@@ -64,34 +64,32 @@ const defaultLogishConfig = {
 
 
 const logishConfig = defaultLogishConfig
-
 const log = new Logish(logishConfig)
 log.setNamespace('example:index')
-console.log(log.trace('Tracing call'))
 
-exampleA()
-exampleB()
+function main() {
+    log.trace('Strart main()')
+    log.fatal('Logish().level =', log.getLevel())
+
+    exampleA()
+    exampleB()
+
+    log.warn(logishConfig)
+    let obj = { oxy: 'meat', cotten: 'beef'}
+    log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
 
 
-log.warn(logishConfig)
-let obj = { oxy: 'meat', cotten: 'beef'}
-log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
+    log.error('Boolean Can run debug? "',  (log.debug('entry 3') ))
 
+    //const logishStats = log.showStats()
+    //console.log ('logish stats', logishStats)
+    //log.info(logishStats)
 
-log.info('Getting started.')
+    // Register a listener
+    log.on('LogEvent', (logEntry) => {
+        console.log('LogEvent', logEntry)
+    })
 
-log.debug('entry 1')
-log.debug('entry 2')
-console.log(log.debug('entry 3'))
-
-const logishStats = log.showStats()
-console.log ('logish stats', logishStats)
-log.info(logishStats)
-
-// Register a listener
-log.on('LogEvent', (logEntry) => {
-    console.log('LogEvent', logEntry)
-})
-
-log.debug('entry 4')
-
+    log.trace('End main()')
+}
+main()
