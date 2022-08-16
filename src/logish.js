@@ -40,10 +40,14 @@ export class Logish extends EventEmitter {
     }
 
 
-    /** Retrieve the current namespace for the instance. */
+    /** Get the current namespace for the instance. */
     getNamespace() { return this.#namespace }
     /** Set the namespace for the instance. */
     setNamespace(value) { this.#namespace = value }
+    /** Get the current log level */
+    getLevel() { return this.#config.getLevel() }
+    /** Set the current log level */
+    setLevel(value) { this.#config.setLevel(value) }
 
     /**
      * Responsible for executing all setup methods for creating a proper instance.
