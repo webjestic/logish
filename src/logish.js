@@ -47,7 +47,16 @@ export class Logish extends EventEmitter {
     /** Get the current log level */
     getLevel() { return this.#config.getLevel() }
     /** Set the current log level */
-    setLevel(value) { this.#config.setLevel(value) }
+    setLevel(value) { 
+        this.#config.setLevel(value) 
+    }
+    /** */
+    getConfig() { return this.#config.getConfig() }
+    /** */
+    setConfig(value) { 
+        this.#config.setConfig(value) 
+        this.#setupControllers()
+    }
 
     /**
      * Responsible for executing all setup methods for creating a proper instance.
