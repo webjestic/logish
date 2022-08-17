@@ -83,7 +83,7 @@ function main() {
     let obj = { oxy: 'meat', cotten: 'beef'}
     log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
 
-
+<<<<<<< HEAD
     log.error('Boolean Can run debug? "',  (log.debug('entry 3') ))
 
     //const logishStats = log.showStats()
@@ -95,6 +95,23 @@ function main() {
     log.on('LogEvent', (logEntry) => {
         console.log('LogEvent', logEntry)
     })
+    */
+
+    log.trace('End main()')
+}
+main()
+
+    log.error('Boolean Can run debug? "',  (log.debug('entry 3') ))
+
+    //const logishStats = log.showStats()
+    //console.log ('logish stats', logishStats)
+    //log.info(logishStats)
+
+        // Register a listener
+        /*
+    log.on('LogEvent', (logEntry) => {
+            console.log('LogEvent', logEntry)
+        })
     */
 
     log.trace('End main()')
