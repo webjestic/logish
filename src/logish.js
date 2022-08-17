@@ -51,7 +51,9 @@ export class Logish extends EventEmitter {
         this.#config.setLevel(value) 
     }
     /** */
-    getConfig() { return this.#config.getConfig() }
+    getConfig() { 
+        return this.#config.getConfig() 
+    }
     /** */
     setConfig(value) { 
         this.#config.setConfig(value) 
@@ -76,6 +78,20 @@ export class Logish extends EventEmitter {
      */
     #setupControllers() {
         this.#controlHandler = new ControlHandler(this.#config.json.controllers)
+        this.#updateConfgWithControllersConfig()
+    }
+
+    /**
+     * 
+     */
+    #updateConfgWithControllersConfig() {
+        //console.log ('CONTROLLERS', this.#controlHandler.controllers)
+        this.#config.json.controllers = []
+        for (let controller of this.#controlHandler.controllers) {
+            //console.log ('CONTROL', controller.getConfig())
+            this.#config.json.controllers.push(controller.getConfig())
+        }
+
     }
 
     /**

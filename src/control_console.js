@@ -30,22 +30,25 @@ export class ControlConsole extends Controller {
      */
     constructor(controllerConfig) {
         super(controllerConfig)
-        this.configure(controllerConfig)            
+        this.#configure(controllerConfig)            
     }
 
     get json() { return this.#json }
     set json(value) { this.#json = value}
+
+    getConfig() { return this.#json }
+    setConfig(value) { this.#configure(value) }
 
     /**
      * 
      * @param {*} controllerConfig 
      * @returns 
      */
-    configure(controllerConfig) {
+    #configure(controllerConfig) {
 
         let result = false
         if (controllerConfig !== undefined && typeof controllerConfig === 'object') {
-            if (this.validate(controllerConfig)) {
+            if (this.#validate(controllerConfig)) {
                 this.#assignConfigValues(controllerConfig)
                 result = true
             } else
@@ -65,7 +68,7 @@ export class ControlConsole extends Controller {
      * 
      * @param {*} controllerConfig 
      */
-    validate(controllerConfig) {
+    #validate(controllerConfig) {
 
         // controllerConfig is validated to be typeof object by this.configure at this point
 
@@ -106,6 +109,11 @@ export class ControlConsole extends Controller {
     #assignConfigValues(controllerConfig) {
 
         // if property exists then assign the value - otherwise assign the default value
+        if (controllerConfig.name !== undefined) 
+            this.#json.name = controllerConfig.name
+        else 
+            this.#json.name = this.#configDefaultScheme.name
+
         if (controllerConfig.active !== undefined) 
             this.#json.active = controllerConfig.active
         else 

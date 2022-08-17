@@ -35,6 +35,7 @@ export class Config {
     getInstance() { return Config.instance }
 
     get json() { return this.#json }
+    set json(value) { this.#json = value }
 
     /** */
     getLevel() { return this.#json.level }
