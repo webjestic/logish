@@ -1,6 +1,7 @@
 # Logish Changelog
 
 ## v1.0.8
+- [refactor: removed vitest and added tap for testing.](https://github.com/webjestic/logish/pull/51)
 ### v1.0.7
 - [docs: updates to README.md](https://github.com/webjestic/logish/pull/28)
 - [ci: added CodeQL workflow.](https://github.com/webjestic/logish/pull/29)
