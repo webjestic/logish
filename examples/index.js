@@ -64,7 +64,12 @@ const defaultLogishConfig = {
 
 
 const logishConfig = defaultLogishConfig
-const log = new Logish(logishConfig)
+
+let newConfig = {
+    level : 'warn'
+}
+
+const log = new Logish(newConfig)
 log.setNamespace('example:index')
 
 function main() {
@@ -78,7 +83,6 @@ function main() {
     let obj = { oxy: 'meat', cotten: 'beef'}
     log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
 
-
     log.error('Boolean Can run debug? "',  (log.debug('entry 3') ))
 
     //const logishStats = log.showStats()
@@ -86,10 +90,19 @@ function main() {
     //log.info(logishStats)
 
     // Register a listener
+    /*
     log.on('LogEvent', (logEntry) => {
         console.log('LogEvent', logEntry)
     })
+    */
 
     log.trace('End main()')
 }
 main()
+
+log.fatal('CURRENT LEVEL=', log.getLevel() )
+log.setLevel('trace')
+log.fatal('CURRENT LEVEL=', log.getLevel() )
+log.trace('trace test')
+
+log.fatal('getConfig()', log.getConfig())

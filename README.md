@@ -178,6 +178,16 @@ Introducing standard logging levels, but not necessarily limited to. Give me a r
 - ERROR - Something happend and it will most likly screw something else up.
 - FATAL - Something happened, and we need to alert the admins and shut down.
 
+## Public Methods
+
+- getLevel()
+- setLevel(value)
+- getNamespace()
+- setNamespace(value)
+- getConfig()
+- setConfig(value)
+- getStats()
+
 ## Contributing
 
 Always welcome people willing to contribute. There is so much to be contributed to any project and should you

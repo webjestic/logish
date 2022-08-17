@@ -18,33 +18,52 @@ export class Config {
     /** Pattern: Singleton */
     constructor(configJSON) {
 
-        if (!Config.instance) {
-            if (!this.configure(configJSON))
-                throw new Error('Unable to create instance - no validated configuration available.')
-            else
-                Config.instance = this
-        }
-        return Config.instance
+        // if (!Config.instance) {
+        //     if (!this.#configure(configJSON))
+        //         throw new Error('Unable to create instance - no validated configuration available.')
+        //     else
+        //         Config.instance = this
+        // } else {
+        //     if (configJSON !== undefined)
+        //         this.setConfig(configJSON)
+        // }
+        // return Config.instance
+
+        this.#configure(configJSON)
     }
     
     getInstance() { return Config.instance }
 
     get json() { return this.#json }
 
+    /** */
     getLevel() { return this.#json.level }
-    setLevel(value) { this.#json.level = value  }
+    /** */
+    setLevel(value) { 
+        if (this.#json.levels[value.toUpperCase()] !== undefined) 
+            this.#json.level = value
+    }
+    /** */
+    getConfig() { return this.#json }
+    /** */
+    setConfig(value) { 
+        if (value !== undefined && typeof value === 'object')
+            this.#configure(value)
+        else 
+            throw new Error ('Logish.setConfig() value is not a  alid object.')
+    } 
 
     /**
      * 
      * @param {object} configJSON 
      * @returns boolean
      */
-    configure(customConfig) {
+    #configure(customConfig) {
         //debug('configJSON %O', configJSON)
 
         let result = false
         if (customConfig !== undefined && typeof customConfig === 'object') {
-            if (this.validate(customConfig)) {
+            if (this.#validate(customConfig)) {
                 this.#json = this.#configDefaultSchema
                 this.#assignConfigValues(customConfig)
                 result = true
@@ -59,11 +78,12 @@ export class Config {
     }
 
     /**
+     * Validates undefined and typeof
      * 
      * @param {object} customConfig 
      * @returns boolean
      */
-    validate(customConfig) {
+    #validate(customConfig) {
 
         // customConfig is validated to be typeof object by this.configure at this point
 
@@ -76,12 +96,14 @@ export class Config {
         if (customConfig.performanceTime !== undefined && typeof customConfig.performanceTime !== 'boolean') 
             throw new Error('Provided config.performanceTime is not typeof "boolean".')
         
-        if (customConfig.controllers !== undefined && typeof customConfig.controllers === 'object') {
-            if (!Array.isArray(customConfig.controllers))
-                throw new Error('Provided config.controllers is not typeof "array".')
+        if (customConfig.controllers !== undefined) {
+            if (typeof customConfig.controllers === 'object') {
+                if (!Array.isArray(customConfig.controllers))
+                    throw new Error('Provided config.controllers is not typeof "array".')
+            } else 
+                throw new Error('Provided config.controllers is not typeof "object".')
+        }
 
-        } else
-            throw new Error('Provided config.controllers is not typeof "object".')
 
         // cannot and should not validate controller specific configurations.
         // this needs to be handled within the controller itself. this validation
@@ -109,9 +131,8 @@ export class Config {
         else this.json.controllers = this.#configDefaultSchema.controllers
 
         if (this.json.controllers.length <= 0) {
-            customConfig.controllers.push( { name: 'console' } )
-            customConfig.controllers.push( { name: 'file', files: [] } )
+            this.json.controllers.push( { name: 'console' } )
+            this.json.controllers.push( { name: 'file', files: [] } )
         }
-        
     }
 }
