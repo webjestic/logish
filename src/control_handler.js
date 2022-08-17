@@ -20,13 +20,15 @@ export class ControlHandler {
     constructor(controllers) {
         //debug ('controllers %O', controllers)
 
-        if (!ControlHandler.instance) {
-            for (let controllerIndex in controllers) 
-                this.#addController(controllers[controllerIndex])
+        // if (!ControlHandler.instance) {
+        //     for (let controllerIndex in controllers) 
+        //         this.#addController(controllers[controllerIndex])
             
-            ControlHandler.instance = this
-        }
-        return ControlHandler.instance
+        //     ControlHandler.instance = this
+        // }
+        // return ControlHandler.instance
+        for (let controllerIndex in controllers) 
+            this.#addController(controllers[controllerIndex])
     }
 
     get controllers() { return this.#controllers }

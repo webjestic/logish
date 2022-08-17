@@ -105,6 +105,4 @@ log.setLevel('trace')
 log.fatal('CURRENT LEVEL=', log.getLevel() )
 log.trace('trace test')
 
-// Logish.getConfig() -> Config.getConfig() 
-// Logish.getCongig().controllers -> ControlHandler.getConfig() -> ControlConsole.getConfig()
 log.fatal('getConfig()', log.getConfig())

@@ -15,7 +15,7 @@ export class Config {
 
     #json = null
 
-    /** Pattern: Singleton */
+    /** Pattern: Singleton does not make sense*/
     constructor(configJSON) {
 
         // if (!Config.instance) {
