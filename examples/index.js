@@ -64,7 +64,12 @@ const defaultLogishConfig = {
 
 
 const logishConfig = defaultLogishConfig
-const log = new Logish(logishConfig)
+
+let newConfig = {
+    level : 'warn'
+}
+
+const log = new Logish(newConfig)
 log.setNamespace('example:index')
 
 function main() {
@@ -86,10 +91,20 @@ function main() {
     //log.info(logishStats)
 
     // Register a listener
+    /*
     log.on('LogEvent', (logEntry) => {
         console.log('LogEvent', logEntry)
     })
+    */
 
     log.trace('End main()')
 }
 main()
+
+
+log.fatal('CURRENT LEVEL=', log.getLevel() )
+log.setLevel('trace')
+log.fatal('CURRENT LEVEL=', log.getLevel() )
+log.trace('trace test')
+
+log.fatal('getConfig()', log.getConfig())
