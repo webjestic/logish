@@ -83,6 +83,9 @@ function main() {
     let obj = { oxy: 'meat', cotten: 'beef'}
     log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
 
+    log.warn(logishConfig)
+    let obj = { oxy: 'meat', cotten: 'beef'}
+    log.warn('actual video', 1000, ['one', 'two', 'three'], obj )
 
     log.error('Boolean Can run debug? "',  (log.debug('entry 3') ))
 
