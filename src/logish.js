@@ -158,7 +158,7 @@ export class Logish extends EventEmitter {
                 else {
                     if (entry.data === undefined) entry.data = {}
                     entry.data[dataIndex] = arguments[i]
-                    dataIndex++
+                    dataIndex += dataIndex
                 }
                 break
             default :
@@ -206,7 +206,9 @@ export class Logish extends EventEmitter {
      */
     #allowLevelEntry(level) {
 
-        const result = (this.#config.json.levels[level.toUpperCase()] >= this.#config.json.levels[this.#config.json.level.toUpperCase()])
+        const result = 
+            (this.#config.json.levels[level.toUpperCase()] 
+            >= this.#config.json.levels[this.#config.json.level.toUpperCase()])
 
         return result
     }
