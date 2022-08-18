@@ -200,11 +200,15 @@ export class ControlFile extends Controller {
             else 
                 this.#json.files[idx].gzip_backups = this.#configDefaultScheme.files[idx].gzip_backups
 
+            idx += idx
+        }
+
+        idx = 0
+        for (let fileController of this.#json.files) {
             // update fileController.filename with proper, full path.
             this.#prepFilename(fileController, idx)
             // create log folder if needed
             this.#mkdir(fileController)
-
             idx += idx
         }
         
