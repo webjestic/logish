@@ -1,16 +1,10 @@
 
-import { Logish } from './../src/logish.js'
+import { getLogish } from './logger.mjs'
 
+const log = getLogish()
+log.setNamespace('example:A')
 
-/**
- * Creating instance inside function, because example/index imports this
- * module before creating an example/index isntance. Now, because a previous
- * instance of Logish has been created, this instance will use the previously
- * loaded configuration.
- */
 export function exampleA () {
-    const log = new Logish()
-    log.setNamespace('example:A')
 
     log.trace('Start exampleA()')
     log.debug('Debugging message, turn off in config.')

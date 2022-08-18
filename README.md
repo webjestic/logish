@@ -190,17 +190,8 @@ Introducing standard logging levels, but not necessarily limited to. Give me a r
 
 ## Contributing
 
-Always welcome people willing to contribute. There is so much to be contributed to any project and should you
-choose to controbute to this project, that would be amazing. We do adhere to a (code of condeuct) and we do
-implement a workflow process.
+Always welcome people willing to contribute. [Please read the Open Source Guide.](https://opensource.guide/)
+There is so much to be contributed to any project and should you choose to controbute to this project, 
+that would be amazing. We do adhere to a (code of condeuct) and we do implement a workflow process. 
 
-### Changelog Entries
 
-- fix: Indciates PR reflects a bug fix (including inline spelling corrections).
-- feature: Indicates RP reflects a new feature
-- chore: Indicates PR reflects a chore (such as package version increment, code cleaning, or doc cleaening)
-- refactor: Indicates PR reflects a better implementation, which coes not change functional outcome
-- type: Indicates PR reflects an actual `type` change (such as class to interface)
-- ci: Indicates PR is a foundational devops (continious intergration) change
-- docs: Indicates PR reflects documentation updatesd
-- test: Indicartes PR reflects test enhancements, which may be fixes or features

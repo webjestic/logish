@@ -1,8 +1,9 @@
 
-import { Logish } from './../src/logish.js'
+import { getLogish } from './logger.mjs'
+
+const log = getLogish()
+log.setNamespace('example:B')
 
 export function exampleB () {
-    const log = new Logish()
-    log.setNamespace('example:B')
-    log.info('Log already created once, and will use that configruation.')
+    log.error('Log already created once, and will use that configruation.')
 }

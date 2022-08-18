@@ -15,7 +15,7 @@ export class Config {
 
     #json = null
 
-    /** Pattern: Singleton */
+    /** Pattern: Singleton does not make sense*/
     constructor(configJSON) {
 
         // if (!Config.instance) {
@@ -35,6 +35,7 @@ export class Config {
     getInstance() { return Config.instance }
 
     get json() { return this.#json }
+    set json(value) { this.#json = value }
 
     /** */
     getLevel() { return this.#json.level }

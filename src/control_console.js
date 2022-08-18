@@ -30,22 +30,25 @@ export class ControlConsole extends Controller {
      */
     constructor(controllerConfig) {
         super(controllerConfig)
-        this.configure(controllerConfig)            
+        this.#configure(controllerConfig)            
     }
 
     get json() { return this.#json }
     set json(value) { this.#json = value}
+
+    getConfig() { return this.#json }
+    setConfig(value) { this.#configure(value) }
 
     /**
      * 
      * @param {*} controllerConfig 
      * @returns 
      */
-    configure(controllerConfig) {
+    #configure(controllerConfig) {
 
         let result = false
         if (controllerConfig !== undefined && typeof controllerConfig === 'object') {
-            if (this.validate(controllerConfig)) {
+            if (this.#validate(controllerConfig)) {
                 this.#assignConfigValues(controllerConfig)
                 result = true
             } else
@@ -65,29 +68,35 @@ export class ControlConsole extends Controller {
      * 
      * @param {*} controllerConfig 
      */
-    validate(controllerConfig) {
+    #validate(controllerConfig) {
 
         // controllerConfig is validated to be typeof object by this.configure at this point
 
         // if property exists, the validate the type of the property
-        if (controllerConfig.active !== undefined && typeof controllerConfig.active !==  'boolean')
+        if (controllerConfig.active !== undefined 
+            && typeof controllerConfig.active !==  'boolean')
             throw new Error ('Provided controller.active is not typeof "boolean".')
 
-        if (controllerConfig.displayLevels !== undefined && typeof controllerConfig.displayLevels === 'object') {
+        if (controllerConfig.displayLevels !== undefined 
+            && typeof controllerConfig.displayLevels === 'object') {
             if (!Array.isArray(controllerConfig.displayLevels)) 
                 throw new Error ('Provided controller.displayLevels is not of typeof "array".')
         }
 
-        if (controllerConfig.format !== undefined && typeof controllerConfig.format !== 'string') 
+        if (controllerConfig.format !== undefined 
+            && typeof controllerConfig.format !== 'string') 
             throw new Error ('Provided controller.format is not typeof "string".')
 
-        if (controllerConfig.useColor !== undefined && typeof controllerConfig.useColor !== 'boolean') 
+        if (controllerConfig.useColor !== undefined 
+            && typeof controllerConfig.useColor !== 'boolean') 
             throw new Error ('Provided controller.useColor is not typeof "boolean".')
 
-        if (controllerConfig.displayOnlyEnvNamespace !== undefined && typeof controllerConfig.displayOnlyEnvNamespace !== 'boolean') 
+        if (controllerConfig.displayOnlyEnvNamespace !== undefined 
+            && typeof controllerConfig.displayOnlyEnvNamespace !== 'boolean') 
             throw new Error ('Provided controller.displayOnlyEnvNamespace is not typeof "boolean".')
 
-        if (controllerConfig.colors !== undefined && typeof controllerConfig.colors !== 'object') 
+        if (controllerConfig.colors !== undefined 
+            && typeof controllerConfig.colors !== 'object') 
             throw new Error ('Provided controller.colors is not of typeof "object".')
 
         return true
@@ -100,23 +109,40 @@ export class ControlConsole extends Controller {
     #assignConfigValues(controllerConfig) {
 
         // if property exists then assign the value - otherwise assign the default value
-        if (controllerConfig.active !== undefined) this.#json.active = controllerConfig.active
-        else this.#json.active = this.#configDefaultScheme.active
+        if (controllerConfig.name !== undefined) 
+            this.#json.name = controllerConfig.name
+        else 
+            this.#json.name = this.#configDefaultScheme.name
 
-        if (controllerConfig.displayLevels !== undefined) this.#json.displayLevels = controllerConfig.displayLevels
-        else this.#json.displayLevels = this.#configDefaultScheme.displayLevels
+        if (controllerConfig.active !== undefined) 
+            this.#json.active = controllerConfig.active
+        else 
+            this.#json.active = this.#configDefaultScheme.active
 
-        if (controllerConfig.format !== undefined) this.#json.format = controllerConfig.format
-        else this.#json.format = this.#configDefaultScheme.format
+        if (controllerConfig.displayLevels !== undefined) 
+            this.#json.displayLevels = controllerConfig.displayLevels
+        else 
+            this.#json.displayLevels = this.#configDefaultScheme.displayLevels
+
+        if (controllerConfig.format !== undefined) 
+            this.#json.format = controllerConfig.format
+        else 
+            this.#json.format = this.#configDefaultScheme.format
         
-        if (controllerConfig.useColor !== undefined) this.#json.useColor = controllerConfig.useColor
-        else this.#json.useColor = this.#configDefaultScheme.useColor
+        if (controllerConfig.useColor !== undefined) 
+            this.#json.useColor = controllerConfig.useColor
+        else 
+            this.#json.useColor = this.#configDefaultScheme.useColor
 
-        if (controllerConfig.displayOnlyEnvNamespace !== undefined) this.#json.displayOnlyEnvNamespace = controllerConfig.displayOnlyEnvNamespace
-        else this.#json.displayOnlyEnvNamespace = this.#configDefaultScheme.displayOnlyEnvNamespace
+        if (controllerConfig.displayOnlyEnvNamespace !== undefined) 
+            this.#json.displayOnlyEnvNamespace = controllerConfig.displayOnlyEnvNamespace
+        else 
+            this.#json.displayOnlyEnvNamespace = this.#configDefaultScheme.displayOnlyEnvNamespace
 
-        if (controllerConfig.colors !== undefined) this.#json.colors = controllerConfig.colors
-        else this.#json.colors = this.#configDefaultScheme.colors
+        if (controllerConfig.colors !== undefined) 
+            this.#json.colors = controllerConfig.colors
+        else 
+            this.#json.colors = this.#configDefaultScheme.colors
     }
         
 
@@ -153,7 +179,8 @@ export class ControlConsole extends Controller {
                 // if logEntry.namespace is NOT found in logEntry.envVars,
                 // then restrict it by assigning TRUE
                 const namespaceWildcard = logEntry.namespace.substring(0, logEntry.namespace.indexOf(':')+1) + '*'
-                if (logEntry.envVars.indexOf(logEntry.namespace) > -1 || logEntry.envVars.indexOf(namespaceWildcard) > -1) 
+                if (logEntry.envVars.indexOf(logEntry.namespace) > -1 
+                || logEntry.envVars.indexOf(namespaceWildcard) > -1) 
                     result = true
             }
         }
@@ -202,10 +229,14 @@ export class ControlConsole extends Controller {
             const dimColor = '\x1b[2m'
             const underscore = '\x1b[4m'
 
-            if (logEntry.level !== undefined) formatStr = formatStr.replace('%level', `${levelColor}%level${resetColor}`)
-            if (logEntry.performance !== undefined) formatStr = formatStr.replace('%performance', `${levelColor}%performance${resetColor}`)
-            if (logEntry.namespace !== undefined) formatStr = formatStr.replace('%namespace', `${underscore}%namespace${resetColor}`)
-            if (logEntry.datetime.dateString !== undefined) formatStr = formatStr.replace('%datetime', `${dimColor}%datetime${resetColor}`)
+            if (logEntry.level !== undefined) 
+                formatStr = formatStr.replace('%level', `${levelColor}%level${resetColor}`)
+            if (logEntry.performance !== undefined) 
+                formatStr = formatStr.replace('%performance', `${levelColor}%performance${resetColor}`)
+            if (logEntry.namespace !== undefined) 
+                formatStr = formatStr.replace('%namespace', `${underscore}%namespace${resetColor}`)
+            if (logEntry.datetime.dateString !== undefined) 
+                formatStr = formatStr.replace('%datetime', `${dimColor}%datetime${resetColor}`)
 
             returnEntry = super.formatEntry(logEntry, formatStr)
         }
