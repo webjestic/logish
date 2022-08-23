@@ -25,6 +25,9 @@ export class Logish extends EventEmitter {
     /** Namespace of the Logish instance. */
     #namespace = undefined
 
+    /** Use Functions */
+    #useFunctions = []
+
     /**
      * Class Constructor. Responsible for setting up a proper Logish instance.
      * 
@@ -190,6 +193,12 @@ export class Logish extends EventEmitter {
         var logEntry = new LogEntry(entry)
         //debug('logEntry.json %O', logEntry.json)
         this.#controlHandler.entry(logEntry.json)
+
+        // execute the 
+        if (this.#useFunctions.length > 0) {
+            for (let func of this.#useFunctions) 
+                func(logEntry.json)
+        }
         
         if (callback) callback(logEntry.json)
 
@@ -284,5 +293,20 @@ export class Logish extends EventEmitter {
      */
     showStats() {
         return this.#controlHandler.showStats()
+    }
+
+    /**
+     * 
+     * 
+     * @param {function} func 
+     */
+    use(func) {
+        if (func !== undefined) {
+            if (typeof func === 'function')
+                this.#useFunctions.push(func)
+            else
+                throw new Error ('Logish.use : argument needs to be typeof "function".')
+        } else
+            throw new Error ('Logish.use : argument cannot be undefinied.')
     }
 }
