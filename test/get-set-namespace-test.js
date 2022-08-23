@@ -8,6 +8,7 @@ tap.test('namespace testing', (t) => {
     const log = new Logish()
     t.type(log, Logish)
     log.setNamespace('users:register')
+    // tests callback
     log.info('informational message', (logEntry) => {
         t.match(logEntry.namespace, 'users:register')
     })
