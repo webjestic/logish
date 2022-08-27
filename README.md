@@ -2,6 +2,7 @@
 
 [![CodeQL](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml)
 [![Node.js CI](https://github.com/webjestic/logish/actions/workflows/node-audit.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/node-audit.yml)
+[![npm package](https://camo.githubusercontent.com/515fc499517b1ebae77dc245098474a7a9d22c74a5026078826deb17e3568759/68747470733a2f2f62616467652e667572792e696f2f6a732f6c6f676973682e737667)](https://www.npmjs.com/package/logish)
 
 - **Node Version** *Greater Than or Equal To* `node 16`
 
