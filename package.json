@@ -22,7 +22,7 @@
   ],
   "main": "src/logish.js",
   "scripts": {
-    "test": "tap --cov --reporter=classic",
+    "test": "tap --coverage --reporter=classic",
     "lint": "eslint . --ignore-pattern node_modules/",
     "start": "node src/logish.js"
   },
@@ -30,7 +30,6 @@
     "node": ">=16.0.0"
   },
   "devDependencies": {
-    "coveralls": "^3.1.1",
     "eslint": "^8.20.0",
     "tap": "^16.3.0"
   },
