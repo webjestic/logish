@@ -1,6 +1,6 @@
 {
   "name": "logish",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Lightweight logging and debug-logging utility for Node.",
   "author": "Michael N (webjestic)",
   "license": "MIT",
@@ -30,6 +30,7 @@
     "node": ">=16.0.0"
   },
   "devDependencies": {
+    "coveralls": "^3.1.1",
     "eslint": "^8.20.0",
     "tap": "^16.3.0"
   },

@@ -1,7 +1,9 @@
 # Logish
 
-[![CodeQL](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml)
 [![Node.js CI](https://github.com/webjestic/logish/actions/workflows/node-audit.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/node-audit.yml)
+[![CodeQL](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml)
+[![Coverage Status](https://coveralls.io/repos/github/webjestic/logish/badge.svg?branch=main)](https://coveralls.io/github/webjestic/logish?branch=main)
+[![npm version](https://badge.fury.io/js/logish.svg)](https://badge.fury.io/js/logish)
 
 - **Node Version** *Greater Than or Equal To* `node 16`
 
