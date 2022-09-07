@@ -19,7 +19,6 @@
         "no-unused-private-class-members": 1,
         "brace-style" : ["error", "1tbs", { "allowSingleLine": true }],
         "curly": ["error", "multi-or-nest"],
-        "func-names": 0,
-        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+        "func-names": 0
     }
 }

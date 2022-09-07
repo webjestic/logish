@@ -200,7 +200,7 @@ export class ControlFile extends Controller {
             else 
                 this.#json.files[idx].gzip_backups = this.#configDefaultScheme.files[idx].gzip_backups
 
-            idx += idx
+            idx++
         }
 
         idx = 0
@@ -209,7 +209,7 @@ export class ControlFile extends Controller {
             this.#prepFilename(fileController, idx)
             // create log folder if needed
             this.#mkdir(fileController)
-            idx += idx
+            idx++
         }
         
     }
