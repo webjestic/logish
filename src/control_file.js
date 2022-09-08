@@ -208,7 +208,8 @@ export class ControlFile extends Controller {
             // update fileController.filename with proper, full path.
             this.#prepFilename(fileController, idx)
             // create log folder if needed
-            this.#mkdir(fileController)
+            if (this.#json.active === true)
+                this.#mkdir(fileController)
             idx++
         }
         
