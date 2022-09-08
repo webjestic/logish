@@ -21,7 +21,7 @@ import { Logish } from './../src/logish.js'
 //         },
 //         {
 //             name: 'file',
-//             active: true,
+//             active: false,
 //             files: [
 //                 {
 //                     title: 'application',
