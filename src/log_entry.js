@@ -32,7 +32,19 @@ export class LogEntry {
 
         const dtime = Date.now()
         this.#json.datetime.timestamp = dtime
-        this.#json.datetime.dateString = new Date(dtime).toISOString().replace('T',' ').split('.')[0]
+        // format 2023-03-16 10:40:40 
+        let dstr = new Date(dtime)
+        this.#json.datetime.dateString = (dstr.toLocaleString('en-US', { 
+            hourCycle: 'h23',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            timeZoneName: 'short'
+        })).replace(/,/g, '')
+        // this.#json.datetime.dateString = new Date(dtime).toISOString().replace('T',' ').split('.')[0]
         this.#json.hostname = os.hostname()
         this.#updateEntry(entry)
     }
