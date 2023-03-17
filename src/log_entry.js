@@ -42,8 +42,13 @@ export class LogEntry {
             hour: 'numeric',
             minute: 'numeric',
             second: 'numeric',
-            timeZoneName: 'short'
+            // timeZoneName: 'short'
         })).replace(/,/g, '')
+        const dateParts = this.#json.datetime.dateString.split(/[\s,]+/) 
+        const month = dateParts[0].split('/')[0] // - 1 // month is zero-indexed in JavaScript
+        const day = dateParts[0].split('/')[1]
+        const year = dateParts[0].split('/')[2]
+        this.#json.datetime.dateString = year +'-'+ month +'-'+ day +' ' + dateParts[1]
         // this.#json.datetime.dateString = new Date(dtime).toISOString().replace('T',' ').split('.')[0]
         this.#json.hostname = os.hostname()
         this.#updateEntry(entry)
