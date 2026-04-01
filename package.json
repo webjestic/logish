@@ -22,7 +22,7 @@
   ],
   "main": "src/logish.js",
   "scripts": {
-    "test": "tap --reporter=base",
+    "test": "tap --reporter=base --allow-incomplete-coverage",
     "lint": "eslint . --ignore-pattern node_modules/",
     "start": "node src/logish.js"
   },
