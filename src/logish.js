@@ -89,9 +89,8 @@ export class Logish extends EventEmitter {
      */
     #updateConfgWithControllersConfig() {
         this.#config.json.controllers = []
-        for (let controller of this.#controlHandler.controllers) {
+        for (let controller of this.#controlHandler.controllers)
             this.#config.json.controllers.push(controller.getConfig())
-        }
     }
 
     /**
