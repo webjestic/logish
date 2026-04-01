@@ -1,7 +1,6 @@
 # Logish
 
 [![Node.js CI](https://github.com/webjestic/logish/actions/workflows/node-audit.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/node-audit.yml)
-[![CodeQL](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml)
 [![npm version](https://badge.fury.io/js/logish.svg)](https://badge.fury.io/js/logish)
 
 - **Node Version** *Greater Than or Equal To* `node 18`
