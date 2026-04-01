@@ -5,7 +5,7 @@
  */
 export class Controller {
 
-    /** Coniguration specific only to the controller */
+    /** Configuration specific only to the controller */
     #json
 
     /** Simple stats for some fun or interesting viewing */

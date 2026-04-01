@@ -88,13 +88,10 @@ export class Logish extends EventEmitter {
      * 
      */
     #updateConfgWithControllersConfig() {
-        //console.log ('CONTROLLERS', this.#controlHandler.controllers)
         this.#config.json.controllers = []
         for (let controller of this.#controlHandler.controllers) {
-            //console.log ('CONTROL', controller.getConfig())
             this.#config.json.controllers.push(controller.getConfig())
         }
-
     }
 
     /**
@@ -143,45 +140,22 @@ export class Logish extends EventEmitter {
             message : ''
             //message: args[1]
         }
-        /*
-        if (arguments.length > 2) {
-            for (let i = 2; i <= arguments.length-1; i++) {
-                switch (typeof arguments[i]) {
-                case 'function' : 
-                    callback = arguments[i]
-                    break
-                case 'object' : 
-                    if (Array.isArray(arguments[i]))
-                        entry.message += ' [ ' + arguments[i] + ' ]'
-                    else {
-                        if (entry.data === undefined) entry.data = {}
-                        entry.data[dataIndex] = arguments[i]
-                        dataIndex++
-                    }
-                    break
-                default :
-                    entry.message += ' ' + arguments[i]
-                }
-            }
-        }
-        v1.0.4
-        */
-        for (let i = 1; i <= arguments.length-1; i++) {
-            switch (typeof arguments[i]) {
+        for (let i = 1; i < args.length; i++) {
+            switch (typeof args[i]) {
             case 'function' : 
-                callback = arguments[i]
+                callback = args[i]
                 break
             case 'object' : 
-                if (Array.isArray(arguments[i]))
-                    entry.message += ' [ ' + arguments[i] + ' ]'
+                if (Array.isArray(args[i]))
+                    entry.message += ' [ ' + args[i] + ' ]'
                 else {
                     if (entry.data === undefined) entry.data = {}
-                    entry.data[dataIndex] = arguments[i]
-                    dataIndex += dataIndex
+                    entry.data[dataIndex] = args[i]
+                    dataIndex += 1
                 }
                 break
             default :
-                entry.message += ' ' + arguments[i]
+                entry.message += ' ' + args[i]
             }
         }
 
@@ -191,7 +165,6 @@ export class Logish extends EventEmitter {
 
         // pass the log entry to the controllers for porcessing and run the callback
         var logEntry = new LogEntry(entry)
-        //debug('logEntry.json %O', logEntry.json)
         this.#controlHandler.entry(logEntry.json)
 
         // execute the 

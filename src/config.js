@@ -15,20 +15,7 @@ export class Config {
 
     #json = null
 
-    /** Pattern: Singleton does not make sense*/
     constructor(configJSON) {
-
-        // if (!Config.instance) {
-        //     if (!this.#configure(configJSON))
-        //         throw new Error('Unable to create instance - no validated configuration available.')
-        //     else
-        //         Config.instance = this
-        // } else {
-        //     if (configJSON !== undefined)
-        //         this.setConfig(configJSON)
-        // }
-        // return Config.instance
-
         this.#configure(configJSON)
     }
     
@@ -51,7 +38,7 @@ export class Config {
         if (value !== undefined && typeof value === 'object')
             this.#configure(value)
         else 
-            throw new Error ('Logish.setConfig() value is not a  alid object.')
+            throw new Error ('Logish.setConfig() value is not a valid object.')
     } 
 
     /**
@@ -60,8 +47,6 @@ export class Config {
      * @returns boolean
      */
     #configure(customConfig) {
-        //debug('configJSON %O', configJSON)
-
         let result = false
         if (customConfig !== undefined && typeof customConfig === 'object') {
             if (this.#validate(customConfig)) {

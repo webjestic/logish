@@ -18,16 +18,7 @@ export class ControlHandler {
      * @returns instance
      */
     constructor(controllers) {
-        //debug ('controllers %O', controllers)
-
-        // if (!ControlHandler.instance) {
-        //     for (let controllerIndex in controllers) 
-        //         this.#addController(controllers[controllerIndex])
-            
-        //     ControlHandler.instance = this
-        // }
-        // return ControlHandler.instance
-        for (let controllerIndex in controllers) 
+        for (let controllerIndex in controllers)
             this.#addController(controllers[controllerIndex])
     }
 
@@ -41,10 +32,7 @@ export class ControlHandler {
      * @access Public
      * @param {object} controller - The json conifguration of a controller.
      */
-    async #addController(controller) {
-        //debug('controller %O', controller)
-
-        //this.#loadControllerClass(controller)
+    #addController(controller) {
         if (controller.name === 'console')
             this.#controllers.push(new ControlConsole(controller))
         if (controller.name === 'file')
@@ -60,10 +48,6 @@ export class ControlHandler {
      * @param {object} logEntry 
      */
     entry(logEntry) {
-        //debug(logEntry)
-    
-        // log entries may be added before controllers have finished creating,
-        // therefore, wait for pending promises to complete before processing.
         for (let controller of this.#controllers) {
             if( controller.json.active )
                 controller.entry(logEntry)

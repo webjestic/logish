@@ -22,7 +22,6 @@ tap.test('custom config levels', (t) => {
         level : 'warn'
     }
     const log = new Logish(logishConfig)
-    console.log (log.trace('trace test msg'))
     t.type(log, Logish)
     t.notOk(log.trace('trace test msg'))
     t.notOk(log.debug('debug test msg'))

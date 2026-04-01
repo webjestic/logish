@@ -98,10 +98,8 @@ export class ControlFile extends Controller {
             
         }
 
-        //debug('controllerConfig %O', controllerConfig)
         if (controllerConfig.files !== undefined) {
             for (let fileController of controllerConfig.files) {
-                //debug('fileController %O', fileController)
 
                 if (fileController.title !== undefined 
                     && typeof fileController.title !== 'string')
@@ -125,15 +123,15 @@ export class ControlFile extends Controller {
                     && typeof fileController.filename !== 'string')  
                     throw new Error ('Provided controller.filename is not of typeof "string".')
 
-                if (fileController.maxsize_in_mb != undefined 
+                if (fileController.maxsize_in_mb !== undefined
                     && typeof fileController.maxsize_in_mb !== 'number')
                     throw new Error ('Provided controller.maxsize_in_mb is not of typeof "number".')
 
-                if (fileController.backups_kept != undefined 
+                if (fileController.backups_kept !== undefined
                     && typeof fileController.backups_kept !== 'number')
                     throw new Error ('Provided controller.backups_kept is not of typeof "number".')
 
-                if (fileController.gzip_backups != undefined 
+                if (fileController.gzip_backups !== undefined
                     && typeof fileController.gzip_backups !== 'boolean')
                     throw new Error ('Provided controller.gzip_backups is not of typeof "boolean".')
 
@@ -160,7 +158,7 @@ export class ControlFile extends Controller {
         else this.#json.active = this.#configDefaultScheme.active
 
         // if property exists then assign the value - otherwise assign the default value
-        this.#json.files = this.#configDefaultScheme.files
+        this.#json.files = structuredClone(this.#configDefaultScheme.files)
         let idx = 0
         for (let fileController of controllerConfig.files) {
 
@@ -171,8 +169,8 @@ export class ControlFile extends Controller {
 
             if (fileController.active !== undefined) 
                 this.#json.files[idx].active = fileController.active
-            else 
-                this.#json.files[idx].active = fileController.active
+            else
+                this.#json.files[idx].active = this.#configDefaultScheme.files[idx].active
 
             if (fileController.writeLevels !== undefined) 
                 this.#json.files[idx].writeLevels = fileController.writeLevels.map(lvl => lvl.toLowerCase())
@@ -221,11 +219,7 @@ export class ControlFile extends Controller {
      */
     entry(logEntry) {
         super.entry(logEntry)
-        //debug('entry')
-
-        //debug(this.#json.files)
         for (let fileController of this.#json.files) {
-            //debug('fileController %O', fileController)
             if (fileController.active === true) {
                 if (fileController.writeLevels.indexOf(logEntry.level.toLowerCase()) > -1)
                     this.appendToFile(fileController, logEntry)
@@ -245,15 +239,13 @@ export class ControlFile extends Controller {
         if (logEntry.message !== undefined)  {
             entry = super.formatEntry(logEntry, controller.format)
             entry += os.EOL
-            //debug('entr: %o', entry)
-            
             try {
                 this.#backupFiles(controller)
                 fs.appendFileSync(controller.filename, entry)
                 if (logEntry.data) 
                     fs.appendFileSync(controller.filename, ('data: '+JSON.stringify(logEntry.data)+os.EOL))
             } catch (e) {
-                console.log (e.message, e.code, e.stack)
+                console.error(e.message, e.code, e.stack)
             }
             
 
@@ -294,7 +286,7 @@ export class ControlFile extends Controller {
             if (!fs.existsSync(path.dirname(controller.filename)))
                 fs.mkdirSync(path.dirname(controller.filename), { recursive: true })
         } catch (e) {
-            console.log (e.message, e.code, e.stack)
+            console.error(e.message, e.code, e.stack)
         }
     }
 
@@ -346,7 +338,7 @@ export class ControlFile extends Controller {
             if (fs.existsSync(filename))
                 result = fs.statSync(filename)
         } catch(e) {
-            console.log (e.message, e.code, e.stack)
+            console.error(e.message, e.code, e.stack)
         }
         return result
     }
@@ -392,7 +384,7 @@ export class ControlFile extends Controller {
         try {
             return fs.readdirSync(dir).filter(n => {return n.includes(file)}).sort()
         } catch (e) {
-            console.log (e.message, e.code, e.stack)
+            console.error(e.message, e.code, e.stack)
         }
         return result
     }
@@ -405,7 +397,7 @@ export class ControlFile extends Controller {
         try {
             fs.rmSync(filename)
         } catch (e) {
-            console.log (e.message, e.code, e.stack)
+            console.error(e.message, e.code, e.stack)
         }
     }
 
@@ -418,7 +410,7 @@ export class ControlFile extends Controller {
         try {
             fs.renameSync(filename, targetFile)
         } catch (e) {
-            console.log (e.message, e.code, e.stack)
+            console.error(e.message, e.code, e.stack)
         }
     }
     
