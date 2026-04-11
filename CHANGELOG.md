@@ -1,5 +1,39 @@
 # Logish Changelog
 
+## v1.1.0
+- fix: `dataIndex += dataIndex` corrected to `dataIndex += 1` — multiple data objects now store at sequential indexes
+- fix: file controller else branch was assigning `undefined` instead of default scheme value for `active` flag
+- fix: loose equality `!=` corrected to `!==` in file controller validation (3 occurrences)
+- fix: typo in `setConfig()` error message ("a  alid" → "a valid")
+- fix: typo in `Controller` JSDoc comment ("Coniguration" → "Configuration")
+- fix: duplicate test name in `get-set-level-test.js`
+- fix: `console.log` left in `config-basic-test.js` removed
+- fix: `getStats()` corrected to `showStats()` in README public methods list
+- chore: removed `async` from `#addController` — method contains no async operations
+- chore: replaced legacy `arguments` object with `args` rest parameter in `entry()`
+- chore: file I/O catch blocks changed from `console.log` to `console.error`
+- chore: default scheme mutation in file controller fixed using `structuredClone()`
+- chore: `useColor` default changed to `false` — prevents ANSI codes in aggregated log output
+- chore: `util.inspect` color argument now respects `useColor` setting instead of hardcoded `true`
+- chore: all commented-out dead code removed across `logish.js`, `control_handler.js`, `config.js`, `control_file.js`
+- chore: `engines.node` updated to `>=18.0.0`
+- chore: `eslint` updated to `^8.57.0`
+- chore: `npm audit fix` run — resolved 11 of 23 advisories (remaining are transitive in `tap` dev dependency)
+- test: `get-set-config.js` rewritten — was a copy of namespace test, now correctly tests `setConfig()`
+- test: added `entry-data-test.js` — data object handling and regression coverage for dataIndex fix
+- test: added `show-stats-test.js` — return shape and entry count assertions
+- test: added `file-controller-test.js` — smoke tests for file creation, writeLevels, and inactive flag
+- test: added `use()` invalid argument coverage to `use-function-test.js`
+- test: added `setLevel()` invalid value coverage to `get-set-level-test.js`
+- ci: GitHub Actions updated — `checkout@v4`, `setup-node@v4`, `codeql-action/*@v3`
+- ci: Node test matrix updated to `[18.x, 20.x]`
+- ci: push trigger re-enabled on `main` in both workflows
+- ci: `npm audit` now fails build at `--audit-level=high`
+- ci: CodeQL scheduled scans re-enabled
+- docs: README intro rewritten for clarity
+- docs: added Production Recommendation section — file controller is dev-only
+- docs: added Dynamic Log Level Control section — MongoDB change stream pattern for live level changes without pod restart
+
 ## v1.0.9
 - [chore: removed singleton pattern from ControlHandler]()
 - [feature: getConfig() successfully implemented]()

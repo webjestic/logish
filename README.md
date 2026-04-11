@@ -1,30 +1,30 @@
 # Logish
 
 [![Node.js CI](https://github.com/webjestic/logish/actions/workflows/node-audit.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/node-audit.yml)
-[![CodeQL](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/webjestic/logish/actions/workflows/codeql-analysis.yml)
 [![npm version](https://badge.fury.io/js/logish.svg)](https://badge.fury.io/js/logish)
 
-- **Node Version** *Greater Than or Equal To* `node 16`
+- **Node Version** *Greater Than or Equal To* `node 18`
 
 
-**Logish** is designed to be lightweight, simple and configurable. 
+**Logish** is designed to be lightweight, simple and configurable.
 
-Logish is an EventEmitter logging object that triggers a LogEvent on an entry, allowing for customized handling. 
-Designed with LogEvent in mind, the intention was to allow developers to hook into the event to route log 
-messages to a centralized location (such as a database) or specifically route error and fatal log events to
-monitoring or alerting services such as Slack, Discord, or PagerDuty.
+Logish is an EventEmitter logging object that triggers a `LogEvent` on every entry, allowing for customized handling.
+Use `LogEvent` to route log entries to a centralized store, or route error and fatal events to alerting services
+such as Slack, Discord, or PagerDuty — without any extra libraries.
 
-I'm an experienced developer, with DevOps and Operations SRE experience. The purpose of this project is to create a logging
-system that maintains small log files in a pod (or absolutly no logs in serverless functions), intended to be configured and
-developed in an app for centralized logging AND app debugging. Thinking of datadog, elastic, cloudwatch or other implementations.
-
-This should be designed through the log.on() log event EventEmitter and a Logish production configuration. Examples and
-documentation to come. Any Logish speed improvements are welcome.
+Designed for containerized and serverless environments. Write to console, let your log aggregation layer (Splunk,
+Datadog, CloudWatch, Elastic, etc.) collect from stdout, and use `LogEvent` to handle anything beyond that.
 
 
 ```bash
 npm i logish
 ```
+## Production Recommendation
+
+The **file controller is intended for local development only** — not production. In production environments (containerized or serverless), write to console and let your log aggregation layer (Splunk, Datadog, CloudWatch, Elastic, etc.) collect from stdout. File-based logging in a pod or function adds unnecessary I/O, complicates rotation, and works against how those platforms are designed to operate.
+
+For production, disable the file controller and use the `LogEvent` to route entries to your preferred destination.
+
 ## Default Configuration
 This configuration represents the complete default Logish configuration.
 
@@ -39,7 +39,7 @@ const defaultLogishConfig = {
             displayOnlyEnvNamespace: false,
             displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
             format : '%datetime %level %namespace %entry %performance',
-            useColor: true,
+            useColor: false,
             colors : {
                 trace   : '\x1b[32m',    debug   : '\x1b[36m',
                 info    : '\x1b[37m',    warn    : '\x1b[33m',
@@ -153,6 +153,75 @@ log.trace('END constructor()')
 // output will show time difference between trace calls IF "performanceTime : true"
 ```
 
+## Dynamic Log Level Control
+
+One of the more powerful production patterns is changing the log level of a running pod **without restarting it**.
+Restarting to change a log level kills the process you're trying to debug — and the problem with it.
+
+Because `setLevel()` takes effect immediately, you can wire it to any external config source. The example below
+uses a **MongoDB change stream** to watch a config collection. When the document is updated (e.g. changing
+`config.logger.level` from `"warn"` to `"debug"`), the change stream fires and the new level is applied live.
+
+```javascript
+// logger.js — shared logish instance
+import { Logish } from 'logish'
+
+const log = new Logish({ level: 'warn' })
+export default log
+```
+
+```javascript
+// config.js — watches MongoDB for config changes and updates the logger
+import log from './logger.js'
+import { EventEmitter } from 'events'
+
+class Config extends EventEmitter {
+
+    async init(dbconn) {
+        this.dbconn = dbconn
+        this.setConfigWatch()
+        this.setupDbListeners()
+        await this.loadConfig()
+    }
+
+    setConfigWatch() {
+        this.dbconn.onChange = this.dbconn.model.watch()
+        this.dbconn.onChange.on('change', () => {
+            this.loadConfig()
+            this.emit('configChange')
+        })
+    }
+
+    setupDbListeners() {
+        this.dbconn.connection.on('disconnected', () => {
+            this.dbconn.onChange.close()
+        })
+        this.dbconn.connection.on('reconnected', () => {
+            this.setConfigWatch()  // reopen the watch after reconnect
+        })
+    }
+
+    async loadConfig() {
+        const doc = await this.dbconn.model.findOne({}).exec()
+        this.config = doc
+
+        // apply the log level from the config document — takes effect immediately, no restart needed
+        log.setLevel(this.config.logger.level)
+    }
+
+    getConfig() { return this.config }
+}
+
+export default new Config()
+```
+
+With this in place, updating `logger.level` in your MongoDB config collection changes what gets logged across
+all namespaces instantly. Switch from `warn` to `debug` to investigate a live issue, then back to `warn` when
+done — the pod never restarts, and you never lose the context you were chasing.
+
+The reconnect handling in `setupDbListeners` is important: MongoDB change streams close when the connection
+drops. Reopening the watch on reconnect ensures the live config link is never silently lost.
+
 ## LOGISH Process Variables
 Run with command line environment variables.
 ```bash
@@ -175,8 +244,8 @@ Introducing standard logging levels, but not necessarily limited to. Give me a r
 - TRACE - Intended for code tracing, not stack tracing. (function start & function end as an example)
 - DEBUG - Always need to examine values.
 - INFO - Standard entry.
-- WARN - Something is up, but not going to interupt flow.
-- ERROR - Something happend and it will most likly screw something else up.
+- WARN - Something is up, but not going to interrupt flow.
+- ERROR - Something happened and it will most likely screw something else up.
 - FATAL - Something happened, and we need to alert the admins and shut down.
 
 ## Public Methods
@@ -187,12 +256,12 @@ Introducing standard logging levels, but not necessarily limited to. Give me a r
 - setNamespace(value)
 - getConfig()
 - setConfig(value)
-- getStats()
+- showStats()
 
 ## Contributing
 
 Always welcome people willing to contribute. [Please read the Open Source Guide.](https://opensource.guide/)
-There is so much to be contributed to any project and should you choose to controbute to this project, 
-that would be amazing. We do adhere to a (code of condeuct) and we do implement a workflow process. 
+There is so much to be contributed to any project and should you choose to contribute to this project,
+that would be amazing. We do adhere to a code of conduct and we do implement a workflow process.
 
 

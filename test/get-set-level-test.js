@@ -12,12 +12,20 @@ tap.test('getLevel on default config', (t) => {
     t.end()
 })
 
-tap.test('getLevel on default config', (t) => {
+tap.test('setLevel changes active level', (t) => {
     const log = new Logish()
     t.type(log, Logish)
     log.setLevel('debug')
     t.equal(log.getLevel(), 'debug')
     t.notOk(log.trace('trace test msg'))
     t.ok(log.debug('debug test msg'))
+    t.end()
+})
+
+tap.test('setLevel silently ignores an invalid level', (t) => {
+    const log = new Logish()
+    log.setLevel('warn')
+    log.setLevel('notvalid')
+    t.equal(log.getLevel(), 'warn')
     t.end()
 })

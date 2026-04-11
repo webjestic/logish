@@ -13,7 +13,7 @@ export class ControlConsole extends Controller {
         displayOnlyEnvNamespace: false,
         displayLevels : ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
         format : '%datetime %level %namespace %entry %performance',
-        useColor: true,
+        useColor: false,
         colors : {
             trace   : '\x1b[32m',    debug   : '\x1b[36m',
             info    : '\x1b[37m',    warn    : '\x1b[33m',
@@ -202,7 +202,7 @@ export class ControlConsole extends Controller {
                 // util.inspect(object, showHidden=false, depth=2, colorize=true)
                 // https://nodejs.org/en/knowledge/getting-started/how-to-use-util-inspect/
                 //console.log(`${entry} data: %O`, util.inspect(logEntry.data, false, 10, false))
-                console.log(`${entry} data: `, util.inspect(logEntry.data, false, 10, true))
+                console.log(`${entry} data: `, util.inspect(logEntry.data, false, 10, this.json.useColor))
             } else
                 console.log(entry )
 

@@ -12,7 +12,9 @@ yarn-error.log
 .vscode
 MYNOTES.md
 .nyc_output
+.tap
 
 # lockfiles
 yarn.lock
 
+.AIWORK
